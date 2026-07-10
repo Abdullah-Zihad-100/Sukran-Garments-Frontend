@@ -15,14 +15,15 @@ import ProductForm from "./pages/Admin/ProductForm";
 import Dashboard from "./pages/Admin/Dashboard";
 import Order from "./pages/Admin/Order";
 import ProductList from "./pages/Admin/ProductList";
-import Navbar from "./Components/Navbar";
+import Navbar from "./components/Navbar";
 import Favorites from "./pages/Favorites";
-import Footer from "./components/Footer";
+// import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import AdminLayout from "./admin/AdminLayout";
 import { useAdmin } from "@/context/AdminContext";
 import TrackOrder from "./pages/TrackOrder";
 import { useEffect } from "react";
+import Footer from "./components/Footer";
 
 function AdminRoute() {
   const { token } = useAdmin();
