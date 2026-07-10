@@ -15,6 +15,7 @@ import {
   Minus,
 } from "lucide-react";
 import { useFavorites } from "../context/FavoritesContext";
+import { Helmet } from "react-helmet-async";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -149,6 +150,15 @@ export default function ProductDetail() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Helmet>
+        <title> Sukran Garments</title>
+        <meta
+          name="description"
+          content={`${product.name} - ${product.price} টাকা। সেরা মানের কাপড়, সারাদেশে হোম ডেলিভারি।`}
+        />
+        <meta property="og:title" content={product.name} />
+        <meta property="og:image" content= {product.images?.[selectedImage]} />
+      </Helmet>
       {/* Breadcrumb */}
       <div className="max-w-6xl mx-auto px-4 py-4 text-sm text-gray-500">
         <Link to="/" className="text-pink-500 hover:underline">

@@ -5,14 +5,18 @@ import App from "./App.jsx";
 import { AdminProvider } from "./context/AdminContext.jsx";
 import { Toaster } from "react-hot-toast";
 import { FavoritesProvider } from "./context/FavoritesContext.jsx";
+import { HelmetProvider } from "react-helmet-async";
+
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <AdminProvider>
-      <FavoritesProvider>
-        <App />
-        <Toaster position="top-right" />
-      </FavoritesProvider>
-    </AdminProvider>
+    <HelmetProvider>
+      <AdminProvider>
+        <FavoritesProvider>
+          <App />
+          <Toaster position="top-right" />
+        </FavoritesProvider>
+      </AdminProvider>
+    </HelmetProvider>
   </StrictMode>,
 );

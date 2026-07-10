@@ -7,59 +7,61 @@ function FavoriteProductCard({ product }) {
   const { toggleFavorite } = useFavorites();
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group">
-      <div className="relative overflow-hidden h-60 bg-gray-100">
-        {product.images?.[0] ? (
-          <img
-            src={product.images[0]}
-            alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-6xl">
-            👗
-          </div>
-        )}
-
-        {/* লিস্ট থেকে মুছে ফেলার বাটন */}
-        <button
-          onClick={() => toggleFavorite(product)}
-          className="absolute top-3 right-3 w-8 h-8 bg-white text-red-500 rounded-full shadow flex items-center justify-center hover:scale-110 hover:bg-red-50 transition-transform"
-          title="তালিকা থেকে বাদ দিন"
-        >
-          <Trash2 size={16} />
-        </button>
-      </div>
-
-      <div className="p-4">
-        <p className="text-xs text-purple-500 font-medium mb-1">
-          {product.category}
-        </p>
-        <h3 className="font-semibold text-gray-800 text-sm mb-2 line-clamp-1">
-          {product.name}
-        </h3>
-        <div className="flex items-center gap-2 mb-3">
-          {product.discountPrice ? (
-            <>
-              <span className="text-pink-500 font-bold">
-                ৳{product.discountPrice}
-              </span>
-              <span className="text-gray-400 text-xs line-through">
-                ৳{product.price}
-              </span>
-            </>
+    <>
+      <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group">
+        <div className="relative overflow-hidden h-60 bg-gray-100">
+          {product.images?.[0] ? (
+            <img
+              src={product.images[0]}
+              alt={product.name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
           ) : (
-            <span className="text-pink-500 font-bold">৳{product.price}</span>
+            <div className="w-full h-full flex items-center justify-center text-6xl">
+              👗
+            </div>
           )}
+
+          {/* লিস্ট থেকে মুছে ফেলার বাটন */}
+          <button
+            onClick={() => toggleFavorite(product)}
+            className="absolute top-3 right-3 w-8 h-8 bg-white text-red-500 rounded-full shadow flex items-center justify-center hover:scale-110 hover:bg-red-50 transition-transform"
+            title="তালিকা থেকে বাদ দিন"
+          >
+            <Trash2 size={16} />
+          </button>
         </div>
-        <Link
-          to={`/products/${product._id}`}
-          className="block w-full text-center bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-sm py-2.5 rounded-xl transition-all duration-200 hover:shadow-md font-medium"
-        >
-          বিস্তারিত দেখুন
-        </Link>
+
+        <div className="p-4">
+          <p className="text-xs text-purple-500 font-medium mb-1">
+            {product.category}
+          </p>
+          <h3 className="font-semibold text-gray-800 text-sm mb-2 line-clamp-1">
+            {product.name}
+          </h3>
+          <div className="flex items-center gap-2 mb-3">
+            {product.discountPrice ? (
+              <>
+                <span className="text-pink-500 font-bold">
+                  ৳{product.discountPrice}
+                </span>
+                <span className="text-gray-400 text-xs line-through">
+                  ৳{product.price}
+                </span>
+              </>
+            ) : (
+              <span className="text-pink-500 font-bold">৳{product.price}</span>
+            )}
+          </div>
+          <Link
+            to={`/products/${product._id}`}
+            className="block w-full text-center bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-sm py-2.5 rounded-xl transition-all duration-200 hover:shadow-md font-medium"
+          >
+            বিস্তারিত দেখুন
+          </Link>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

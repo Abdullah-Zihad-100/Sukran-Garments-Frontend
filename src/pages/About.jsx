@@ -6,6 +6,7 @@ import {
   Shield,
   Headphones,
 } from "lucide-react";
+import Seo from "../components/Seo";
 
 const stats = [
   { value: "১০০০+", label: "সন্তুষ্ট গ্রাহক" },
@@ -57,6 +58,11 @@ export default function About() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Card */}
+      <Seo
+        title="আমাদের সম্পর্কে"
+        description="Sukran Garments একটি বিশ্বস্ত অনলাইন পোশাক ব্র্যান্ড, যা সেরা মানের শাড়ি, থ্রি-পিস ও সালোয়ার কামিজ সরবরাহ করে সারাদেশে।"
+        url="/about"
+      />
       <div className="bg-gradient-to-r from-pink-600 to-purple-600  p-10  text-center text-white w-full mb-10">
         <h2 className="text-2xl font-bold mb-2">আজই শপিং শুরু করুন</h2>
         <p className="text-pink-100 mb-6">

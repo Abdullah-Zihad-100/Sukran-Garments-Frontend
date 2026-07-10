@@ -8,6 +8,7 @@ import {
   XCircle,
   Clock,
 } from "lucide-react";
+import Seo from "../components/Seo";
 
 const statusInfo = {
   pending: {
@@ -72,6 +73,11 @@ export default function TrackOrder() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero */}
+      <Seo
+        title="অর্ডার ট্র্যাক করুন"
+        description="আপনার ফোন নাম্বার দিয়ে সহজেই অর্ডার স্ট্যাটাস চেক করুন।"
+        url="/track-order"
+      />
       <div className="bg-gradient-to-r from-pink-600 to-purple-600 text-white py-12 px-4 text-center">
         <Package size={40} className="mx-auto mb-3 opacity-80" />
         <h1 className="text-3xl font-bold mb-2">অর্ডার ট্র্যাক করুন</h1>

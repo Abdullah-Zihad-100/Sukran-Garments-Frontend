@@ -10,6 +10,7 @@ import {
   Send,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import Seo from "../components/Seo";
 
 const cards = [
   {
@@ -90,6 +91,11 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Seo
+        title="যোগাযোগ করুন"
+        description="Sukran Garments এর সাথে যোগাযোগ করুন ফোন বা হোয়াটসঅ্যাপে। আমাদের ঠিকানা ও যোগাযোগের সকল তথ্য এখানে পাবেন।"
+        url="/contact"
+      />
       {/* Hero */}
       <div className="bg-gradient-to-r from-pink-600 to-purple-600 text-white py-12 px-4 text-center">
         <h1 className="text-3xl font-bold mb-2">যোগাযোগ করুন</h1>
