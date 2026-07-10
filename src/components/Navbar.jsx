@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, ShoppingBag, ChevronDown, Heart } from "lucide-react";
+import { Menu, X, ChevronDown, Heart } from "lucide-react";
 import { useFavorites } from "../context/FavoritesContext";
 
 const categories = ["শাড়ি", "জামা", "থ্রি-পিস", "সালোয়ার কামিজ"];
@@ -54,110 +54,122 @@ export default function Navbar() {
           {/* Logo */}
           <Link to="/" className="flex">
             <svg
-              className="mt-6"
-              viewBox="0 0 400 130"
-              width="180"
-              height="60"
-              role="img"
+              width="270"
+              height="100"
+              viewBox="0 0 680 260"
+              xmlns="http://www.w3.org/2000/svg"
             >
               <defs>
                 <linearGradient
-                  id="pinkGrad"
+                  id="petalGrad2"
                   x1="0%"
                   y1="0%"
                   x2="100%"
                   y2="100%"
                 >
-                  <stop offset="0%" style={{ stopColor: "#ec4899" }} />
-                  <stop offset="100%" style={{ stopColor: "#a855f7" }} />
-                </linearGradient>
-                <linearGradient
-                  id="pinkGrad2"
-                  x1="0%"
-                  y1="0%"
-                  x2="100%"
-                  y2="0%"
-                >
-                  <stop offset="0%" style={{ stopColor: "#ec4899" }} />
-                  <stop offset="100%" style={{ stopColor: "#a855f7" }} />
+                  <stop offset="0%" stop-color="#F4C0D1" />
+                  <stop offset="100%" stop-color="#D4537E" />
                 </linearGradient>
               </defs>
-              <rect
-                x="0"
-                y="5"
-                width="64"
-                height="64"
-                rx="16"
-                fill="url(#pinkGrad)"
-              />
-              <path
-                d="M32 19 C32 19 32 15 37 15 C42 15 42 19 42 19 L32 19Z"
-                fill="none"
-                stroke="white"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              />
-              <path
-                d="M37 19 L37 28"
-                fill="none"
-                stroke="white"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              />
-              <path
-                d="M15 53 Q37 35 59 53"
-                fill="none"
-                stroke="white"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              />
-              <line
-                x1="15"
-                y1="53"
-                x2="15"
-                y2="58"
-                stroke="white"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              />
-              <line
-                x1="59"
-                y1="53"
-                x2="59"
-                y2="58"
-                stroke="white"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              />
+              <g transform="translate(120,130)">
+                <g transform="rotate(0)">
+                  <ellipse
+                    cx="0"
+                    cy="-38"
+                    rx="20"
+                    ry="38"
+                    fill="url(#petalGrad2)"
+                  />
+                </g>
+                <g transform="rotate(60)">
+                  <ellipse
+                    cx="0"
+                    cy="-38"
+                    rx="20"
+                    ry="38"
+                    fill="url(#petalGrad2)"
+                    opacity="0.92"
+                  />
+                </g>
+                <g transform="rotate(120)">
+                  <ellipse
+                    cx="0"
+                    cy="-38"
+                    rx="20"
+                    ry="38"
+                    fill="url(#petalGrad2)"
+                    opacity="0.92"
+                  />
+                </g>
+                <g transform="rotate(180)">
+                  <ellipse
+                    cx="0"
+                    cy="-38"
+                    rx="20"
+                    ry="38"
+                    fill="url(#petalGrad2)"
+                  />
+                </g>
+                <g transform="rotate(240)">
+                  <ellipse
+                    cx="0"
+                    cy="-38"
+                    rx="20"
+                    ry="38"
+                    fill="url(#petalGrad2)"
+                    opacity="0.92"
+                  />
+                </g>
+                <g transform="rotate(300)">
+                  <ellipse
+                    cx="0"
+                    cy="-38"
+                    rx="20"
+                    ry="38"
+                    fill="url(#petalGrad2)"
+                    opacity="0.92"
+                  />
+                </g>
+                <circle cx="0" cy="0" r="16" fill="#72243E" />
+                <circle
+                  cx="0"
+                  cy="0"
+                  r="16"
+                  fill="none"
+                  stroke="#FBEAF0"
+                  stroke-width="1.5"
+                />
+              </g>
               <text
-                x="80"
-                y="38"
-                fontFamily="Georgia, serif"
-                fontSize="30"
-                fontWeight="700"
-                fill="#1e293b"
-                letterSpacing="3"
+                x="215"
+                y="120"
+                font-family="Georgia, serif"
+                font-size="52"
+                font-weight="500"
+                fill="#993556"
               >
-                SUKRAN
+                Sukran
               </text>
               <text
-                x="82"
-                y="56"
-                fontFamily="Arial, sans-serif"
-                fontSize="12"
-                fill="#a855f7"
-                letterSpacing="6"
+                x="215"
+                y="170"
+                font-family="Georgia, serif"
+                font-size="52"
+                font-weight="500"
+                fill="#72243E"
               >
-                GARMENTS
+                Garments
               </text>
-              <rect
-                x="82"
-                y="62"
-                width="200"
-                height="2.5"
-                rx="1.5"
-                fill="url(#pinkGrad2)"
-              />
+              <text
+                x="217"
+                y="200"
+                font-family="Arial, sans-serif"
+                font-size="16"
+                letter-spacing="2"
+                fill="#D4537E"
+              >
+                WOMEN'S FASHION &#183; BANGLADESH
+              </text>
             </svg>
           </Link>
 
@@ -298,10 +310,126 @@ export default function Navbar() {
         <div className="flex items-center justify-between px-5 py-4 border-b bg-pink-50">
           <Link
             to="/"
-            className="flex items-center gap-2 text-pink-600 font-bold text-lg"
+            className="flex items-start text-pink-600 font-bold text-lg"
           >
-            <ShoppingBag size={20} />
-            সুক্রান গার্মেন্টস
+            <svg
+              width="150"
+              height="80"
+              viewBox="0 0 680 260"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient
+                  id="petalGrad2"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop offset="0%" stop-color="#F4C0D1" />
+                  <stop offset="100%" stop-color="#D4537E" />
+                </linearGradient>
+              </defs>
+              <g transform="translate(120,130)">
+                <g transform="rotate(0)">
+                  <ellipse
+                    cx="0"
+                    cy="-38"
+                    rx="20"
+                    ry="38"
+                    fill="url(#petalGrad2)"
+                  />
+                </g>
+                <g transform="rotate(60)">
+                  <ellipse
+                    cx="0"
+                    cy="-38"
+                    rx="20"
+                    ry="38"
+                    fill="url(#petalGrad2)"
+                    opacity="0.92"
+                  />
+                </g>
+                <g transform="rotate(120)">
+                  <ellipse
+                    cx="0"
+                    cy="-38"
+                    rx="20"
+                    ry="38"
+                    fill="url(#petalGrad2)"
+                    opacity="0.92"
+                  />
+                </g>
+                <g transform="rotate(180)">
+                  <ellipse
+                    cx="0"
+                    cy="-38"
+                    rx="20"
+                    ry="38"
+                    fill="url(#petalGrad2)"
+                  />
+                </g>
+                <g transform="rotate(240)">
+                  <ellipse
+                    cx="0"
+                    cy="-38"
+                    rx="20"
+                    ry="38"
+                    fill="url(#petalGrad2)"
+                    opacity="0.92"
+                  />
+                </g>
+                <g transform="rotate(300)">
+                  <ellipse
+                    cx="0"
+                    cy="-38"
+                    rx="20"
+                    ry="38"
+                    fill="url(#petalGrad2)"
+                    opacity="0.92"
+                  />
+                </g>
+                <circle cx="0" cy="0" r="16" fill="#72243E" />
+                <circle
+                  cx="0"
+                  cy="0"
+                  r="16"
+                  fill="none"
+                  stroke="#FBEAF0"
+                  stroke-width="1.5"
+                />
+              </g>
+              <text
+                x="215"
+                y="120"
+                font-family="Georgia, serif"
+                font-size="52"
+                font-weight="500"
+                fill="#993556"
+              >
+                Sukran
+              </text>
+              <text
+                x="215"
+                y="170"
+                font-family="Georgia, serif"
+                font-size="52"
+                font-weight="500"
+                fill="#72243E"
+              >
+                Garments
+              </text>
+              <text
+                x="217"
+                y="200"
+                font-family="Arial, sans-serif"
+                font-size="16"
+                letter-spacing="2"
+                fill="#D4537E"
+              >
+                WOMEN'S FASHION &#183; BANGLADESH
+              </text>
+            </svg>
           </Link>
           <button
             onClick={() => setMenuOpen(false)}

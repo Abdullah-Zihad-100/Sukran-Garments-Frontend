@@ -17,113 +17,124 @@ export default function Footer() {
             className="flex items-center gap-2 text-white font-bold text-2xl"
           >
             {" "}
-              <svg
-                className="mt-6"
-                viewBox="0 0 400 130"
-                width="180"
-                height="60"
-                role="img"
+            <svg
+              width="300"
+              height="120"
+              viewBox="0 0 680 260"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient
+                  id="petalGrad2"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop offset="0%" stop-color="#F4C0D1" />
+                  <stop offset="100%" stop-color="#D4537E" />
+                </linearGradient>
+              </defs>
+              <g transform="translate(120,130)">
+                <g transform="rotate(0)">
+                  <ellipse
+                    cx="0"
+                    cy="-38"
+                    rx="20"
+                    ry="38"
+                    fill="url(#petalGrad2)"
+                  />
+                </g>
+                <g transform="rotate(60)">
+                  <ellipse
+                    cx="0"
+                    cy="-38"
+                    rx="20"
+                    ry="38"
+                    fill="url(#petalGrad2)"
+                    opacity="0.92"
+                  />
+                </g>
+                <g transform="rotate(120)">
+                  <ellipse
+                    cx="0"
+                    cy="-38"
+                    rx="20"
+                    ry="38"
+                    fill="url(#petalGrad2)"
+                    opacity="0.92"
+                  />
+                </g>
+                <g transform="rotate(180)">
+                  <ellipse
+                    cx="0"
+                    cy="-38"
+                    rx="20"
+                    ry="38"
+                    fill="url(#petalGrad2)"
+                  />
+                </g>
+                <g transform="rotate(240)">
+                  <ellipse
+                    cx="0"
+                    cy="-38"
+                    rx="20"
+                    ry="38"
+                    fill="url(#petalGrad2)"
+                    opacity="0.92"
+                  />
+                </g>
+                <g transform="rotate(300)">
+                  <ellipse
+                    cx="0"
+                    cy="-38"
+                    rx="20"
+                    ry="38"
+                    fill="url(#petalGrad2)"
+                    opacity="0.92"
+                  />
+                </g>
+                <circle cx="0" cy="0" r="16" fill="#72243E" />
+                <circle
+                  cx="0"
+                  cy="0"
+                  r="16"
+                  fill="none"
+                  stroke="#FBEAF0"
+                  stroke-width="1.5"
+                />
+              </g>
+              <text
+                x="215"
+                y="120"
+                font-family="Georgia, serif"
+                font-size="52"
+                font-weight="500"
+                fill="#993556"
               >
-                <defs>
-                  <linearGradient
-                    id="pinkGrad"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="100%"
-                  >
-                    <stop offset="0%" style={{ stopColor: "#ec4899" }} />
-                    <stop offset="100%" style={{ stopColor: "#a855f7" }} />
-                  </linearGradient>
-                  <linearGradient
-                    id="pinkGrad2"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="0%"
-                  >
-                    <stop offset="0%" style={{ stopColor: "#ec4899" }} />
-                    <stop offset="100%" style={{ stopColor: "#a855f7" }} />
-                  </linearGradient>
-                </defs>
-                <rect
-                  x="0"
-                  y="5"
-                  width="64"
-                  height="64"
-                  rx="16"
-                  fill="url(#pinkGrad)"
-                />
-                <path
-                  d="M32 19 C32 19 32 15 37 15 C42 15 42 19 42 19 L32 19Z"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M37 19 L37 28"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M15 53 Q37 35 59 53"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-                <line
-                  x1="15"
-                  y1="53"
-                  x2="15"
-                  y2="58"
-                  stroke="white"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-                <line
-                  x1="59"
-                  y1="53"
-                  x2="59"
-                  y2="58"
-                  stroke="white"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-                <text
-                  x="80"
-                  y="38"
-                  fontFamily="Georgia, serif"
-                  fontSize="30"
-                  fontWeight="700"
-                  fill="#ffffff"
-                  letterSpacing="3"
-                >
-                  SUKRAN
-                </text>
-                <text
-                  x="82"
-                  y="56"
-                  fontFamily="Arial, sans-serif"
-                  fontSize="12"
-                  fill="#a855f7"
-                  letterSpacing="6"
-                >
-                  GARMENTS
-                </text>
-                <rect
-                  x="82"
-                  y="62"
-                  width="200"
-                  height="2.5"
-                  rx="1.5"
-                  fill="url(#pinkGrad2)"
-                />
-              </svg>
-           
+                Sukran
+              </text>
+              <text
+                x="215"
+                y="170"
+                font-family="Georgia, serif"
+                font-size="52"
+                font-weight="500"
+                fill="#72243E"
+              >
+                Garments
+              </text>
+              <text
+                x="217"
+                y="200"
+                font-family="Arial, sans-serif"
+                font-size="16"
+                letter-spacing="2"
+                fill="#D4537E"
+              >
+                WOMEN'S FASHION &#183; BANGLADESH
+              </text>
+            </svg>
           </Link>
           <p className="text-sm text-gray-400 leading-relaxed">
             বাংলাদেশের সেরা পোশাক অনলাইন স্টোর। আমরা গুণমান এবং সাশ্রয়ী মূল্যে
