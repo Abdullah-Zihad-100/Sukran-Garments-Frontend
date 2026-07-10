@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useAdmin } from "../../tempContext/AdminContext";
+import { useAdmin } from "../../context/AdminContext";
 import toast from "react-hot-toast";
 
 const statuses = ["pending", "confirmed", "shipped", "delivered", "cancelled"];

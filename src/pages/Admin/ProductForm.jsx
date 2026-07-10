@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { useAdmin } from "../../tempContext/AdminContext";
+import { useAdmin } from "../../context/AdminContext";
 import toast from "react-hot-toast";
 import { ArrowLeft, Plus, X } from "lucide-react";
 

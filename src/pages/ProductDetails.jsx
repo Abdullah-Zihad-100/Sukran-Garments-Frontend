@@ -14,7 +14,7 @@ import {
   Plus,
   Minus,
 } from "lucide-react";
-import { useFavorites } from "../tempContext/FavoritesContext";
+import { useFavorites } from "../context/FavoritesContext";
 
 export default function ProductDetail() {
   const { id } = useParams();

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Heart, Trash2 } from "lucide-react";
-import { useFavorites } from "../tempContext/FavoritesContext";
+import { useFavorites } from "../context/FavoritesContext";
 
 // ফেভারিট পেজের জন্য কাস্টম প্রোডাক্ট কার্ড (যেখানে রিমুভ করার অপশন থাকবে)
 function FavoriteProductCard({ product }) {

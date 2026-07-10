@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, X, ShoppingBag, ChevronDown, Heart } from "lucide-react";
-import { useFavorites } from "../tempContext/FavoritesContext";
+import { useFavorites } from "../context/FavoritesContext";
 
 const categories = ["শাড়ি", "জামা", "থ্রি-পিস", "সালোয়ার কামিজ"];
 

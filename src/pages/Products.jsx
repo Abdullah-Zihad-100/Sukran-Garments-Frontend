@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { Heart, Search, SlidersHorizontal, X } from "lucide-react";
-import { useFavorites } from "../tempContext/FavoritesContext";
+import { useFavorites } from "../context/FavoritesContext";
 
 const categories = ["সব পণ্য", "শাড়ি", "জামা", "থ্রি-পিস", "সালোয়ার কামিজ"];
 
