@@ -1,9 +1,9 @@
-import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, ShoppingBag, ChevronDown, Heart } from 'lucide-react';
-import { useFavorites } from '../context/FavoritesContext';
+import { useState, useRef, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Menu, X, ShoppingBag, ChevronDown, Heart } from "lucide-react";
+import { useFavorites } from "../tempContext/FavoritesContext";
 
-const categories = ['শাড়ি', 'জামা', 'থ্রি-পিস', 'সালোয়ার কামিজ'];
+const categories = ["শাড়ি", "জামা", "থ্রি-পিস", "সালোয়ার কামিজ"];
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -17,8 +17,8 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // close sidebar on route change

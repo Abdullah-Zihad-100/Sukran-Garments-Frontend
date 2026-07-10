@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useAdmin } from "../../context/AdminContext";
+import { useAdmin } from "../../tempContext/AdminContext";
 import { ShoppingBag, ClipboardList, XCircle, TrendingUp } from "lucide-react";
 
 export default function Dashboard() {
