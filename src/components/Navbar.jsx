@@ -431,12 +431,6 @@ export default function Navbar() {
               </text>
             </svg>
           </Link>
-          <button
-            onClick={() => setMenuOpen(false)}
-            className="text-gray-500 hover:text-pink-600 transition-colors"
-          >
-            <X size={22} />
-          </button>
         </div>
 
         {/* Sidebar Links */}

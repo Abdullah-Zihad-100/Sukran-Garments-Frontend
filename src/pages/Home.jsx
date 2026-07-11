@@ -52,7 +52,7 @@ function ProductCard({ product }) {
           </span>
         )}
         {product.discountPrice && (
-          <div className="absolute top-4 left-4 bg-red-500 text-white text-sm px-3 py-1 rounded-full font-bold">
+          <div className="absolute top-3 left-4 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
             -{Math.round((1 - product.discountPrice / product.price) * 100)}%
             ছাড়
           </div>
