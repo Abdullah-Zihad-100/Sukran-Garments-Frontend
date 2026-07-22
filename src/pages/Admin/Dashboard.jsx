@@ -13,10 +13,10 @@ export default function Dashboard() {
     const headers = { Authorization: `Bearer ${token}` };
 
     Promise.all([
-      axios.get("https://sukran-graments-frontend.onrender.com/api/products", {
+      axios.get(`${import.meta.env.VITE_API_URL}/products`, {
         headers,
       }),
-      axios.get("https://sukran-graments-frontend.onrender.com/api/orders", {
+      axios.get(`${import.meta.env.VITE_API_URL}/orders`, {
         headers,
       }),
     ])

@@ -16,7 +16,7 @@ export default function AdminLogin() {
     setLoading(true);
     try {
       const res = await axios.post(
-        "https://sukran-graments-frontend.onrender.com/api/admin/login",
+        `${import.meta.env.VITE_API_URL}/admin/login`,
         {
           password,
         },

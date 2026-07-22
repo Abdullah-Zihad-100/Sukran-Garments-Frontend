@@ -32,14 +32,42 @@ export default function ProductDetail() {
     address: "",
   });
 
-  // Multiple orders support
+  const [leadSaved, setLeadSaved] = useState(false);
+
+  // ইনকমপ্লিট অর্ডার (Lead) সেভ করার ফাংশন
+  const saveIncompleteOrder = async (currentForm = form) => {
+    // যদি নাম এবং ফোন নাম্বার (ন্যূনতম ১১ ডিজিট) না থাকে, তবে সেভ হবে না
+    if (!currentForm.customerName || currentForm.phone.length < 11) return;
+    if (!product) return;
+
+    try {
+      console.log("📤 Saving Incomplete Order...", currentForm);
+
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/incomplete-orders`,
+        {
+          customerName: currentForm.customerName,
+          phone: currentForm.phone,
+          address: currentForm.address || "ঠিকানা দেওয়া হয়নি", // অ্যাড্রেস শুরুতে অপশনাল রাখা হয়েছে
+          product: product._id,
+          productName: product.name,
+        },
+      );
+
+      console.log("✅ Lead Saved Successfully", res.data);
+      setLeadSaved(true);
+    } catch (err) {
+      console.log("❌ Lead Save Failed", err);
+    }
+  };
+
   const [orderItems, setOrderItems] = useState([
     { color: "", size: "", quantity: 1 },
   ]);
 
   useEffect(() => {
     axios
-      .get(`https://sukran-graments-frontend.onrender.com/api/products/${id}`)
+      .get(`${import.meta.env.VITE_API_URL}/products/${id}`)
       .then((res) => {
         setProduct(res.data);
         if (res.data.colors?.length > 0) {
@@ -60,8 +88,8 @@ export default function ProductDetail() {
     setOrderItems((prev) => [
       ...prev,
       {
-        color: product.colors?.[0] || "",
-        size: product.sizes?.[0] || "",
+        color: product?.colors?.[0] || "",
+        size: product?.sizes?.[0] || "",
         quantity: 1,
       },
     ]);
@@ -91,34 +119,39 @@ export default function ProductDetail() {
       toast.error("সব তথ্য পূরণ করুন");
       return;
     }
+
     for (const item of orderItems) {
-      if (!item.color) {
+      if (product.colors?.length > 0 && !item.color) {
         toast.error("সব আইটেমে রং সিলেক্ট করুন");
         return;
       }
-      if (!item.size) {
+      if (product.sizes?.length > 0 && !item.size) {
         toast.error("সব আইটেমে সাইজ সিলেক্ট করুন");
         return;
       }
     }
+
     setOrderLoading(true);
     try {
-      const res = await axios.post(
-        "https://sukran-graments-frontend.onrender.com/api/orders",
-        {
-          ...form,
-          product: product._id,
-          productName: product.name,
-          selectedColor: orderItems
-            .map((i) => `${i.color} (${i.size}) x${i.quantity}`)
-            .join(", "),
-          selectedSize: orderItems.map((i) => i.size).join(", "),
-          quantity: totalQuantity,
-          totalPrice,
-          orderItems,
-        },
-      );
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/orders`, {
+        ...form,
+        product: product._id,
+        productName: product.name,
+        selectedColor: orderItems
+          .map(
+            (i) => `${i.color}${i.size ? ` (${i.size})` : ""} x${i.quantity}`,
+          )
+          .join(", "),
+        selectedSize: orderItems
+          .map((i) => i.size)
+          .filter(Boolean)
+          .join(", "),
+        quantity: totalQuantity,
+        totalPrice,
+        orderItems,
+      });
       setOrderSuccess(res.data.order);
+      setLeadSaved(false);
       setForm({ customerName: "", phone: "", address: "" });
       setOrderItems([
         {
@@ -129,6 +162,7 @@ export default function ProductDetail() {
       ]);
     } catch {
       toast.error("অর্ডার হয়নি, আবার চেষ্টা করুন");
+      setLeadSaved(true);
     } finally {
       setOrderLoading(false);
     }
@@ -151,14 +185,15 @@ export default function ProductDetail() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Helmet>
-        <title> Sukran Garments</title>
+        <title>Sukran Garments</title>
         <meta
           name="description"
           content={`${product.name} - ${product.price} টাকা। সেরা মানের কাপড়, সারাদেশে হোম ডেলিভারি।`}
         />
         <meta property="og:title" content={product.name} />
-        <meta property="og:image" content= {product.images?.[selectedImage]} />
+        <meta property="og:image" content={product.images?.[selectedImage]} />
       </Helmet>
+
       {/* Breadcrumb */}
       <div className="max-w-6xl mx-auto px-4 py-4 text-sm text-gray-500">
         <Link to="/" className="text-pink-500 hover:underline">
@@ -333,15 +368,29 @@ export default function ProductDetail() {
                         <div>
                           <p className="text-xs text-gray-500 mb-2">রং:</p>
                           <div className="flex flex-wrap gap-2">
-                            {product.colors.map((color) => (
+                            {product.colors.map((color, colorIdx) => (
                               <button
                                 key={color}
-                                onClick={() =>
-                                  updateOrderItem(index, "color", color)
-                                }
-                                className={`px-3 py-1.5 rounded-lg border-2 text-sm font-medium transition-all duration-200 ${item.color === color ? "border-pink-500 bg-pink-50 text-pink-600" : "border-gray-200 text-gray-600 hover:border-pink-300"}`}
+                                onClick={() => {
+                                  updateOrderItem(index, "color", color);
+                                  if (product.images?.[colorIdx]) {
+                                    setSelectedImage(colorIdx);
+                                  }
+                                }}
+                                className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg border-2 text-sm font-medium transition-all duration-200 ${
+                                  item.color === color
+                                    ? "border-pink-500 bg-pink-50 text-pink-600"
+                                    : "border-gray-200 text-gray-600 hover:border-pink-300"
+                                }`}
                               >
-                                {color}
+                                {product.images?.[colorIdx] && (
+                                  <img
+                                    src={product.images[colorIdx]}
+                                    alt={color}
+                                    className="w-10 h-10 rounded-md object-cover border border-gray-100 shrink-0"
+                                  />
+                                )}
+                                <span>{color}</span>
                               </button>
                             ))}
                           </div>
@@ -425,9 +474,17 @@ export default function ProductDetail() {
                       type="text"
                       placeholder="আপনার পূর্ণ নাম"
                       value={form.customerName}
-                      onChange={(e) =>
-                        setForm({ ...form, customerName: e.target.value })
-                      }
+                      onChange={(e) => {
+                        const updatedForm = {
+                          ...form,
+                          customerName: e.target.value,
+                        };
+                        setForm(updatedForm);
+                        if (updatedForm.phone.length >= 11) {
+                          saveIncompleteOrder(updatedForm);
+                        }
+                      }}
+                      onBlur={() => saveIncompleteOrder(form)}
                       className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 transition"
                     />
                   </div>
@@ -439,9 +496,14 @@ export default function ProductDetail() {
                       type="tel"
                       placeholder="01XXXXXXXXX"
                       value={form.phone}
-                      onChange={(e) =>
-                        setForm({ ...form, phone: e.target.value })
-                      }
+                      onChange={(e) => {
+                        const updatedForm = { ...form, phone: e.target.value };
+                        setForm(updatedForm);
+                        if (updatedForm.phone.length === 11) {
+                          saveIncompleteOrder(updatedForm);
+                        }
+                      }}
+                      onBlur={() => saveIncompleteOrder(form)}
                       className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 transition"
                     />
                   </div>
@@ -452,11 +514,13 @@ export default function ProductDetail() {
                     সম্পূর্ণ ঠিকানা *
                   </label>
                   <textarea
-                    placeholder="বাড়ি, রোড, এলাকা, খানা, জেলা"
+                    placeholder="বাড়ি, রোড, এলাকা, থানা, জেলা"
                     value={form.address}
-                    onChange={(e) =>
-                      setForm({ ...form, address: e.target.value })
-                    }
+                    onChange={(e) => {
+                      const updatedForm = { ...form, address: e.target.value };
+                      setForm(updatedForm);
+                    }}
+                    onBlur={() => saveIncompleteOrder(form)}
                     rows={3}
                     className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 transition resize-none"
                   />
@@ -499,7 +563,8 @@ export default function ProductDetail() {
                         className="flex justify-between text-gray-600"
                       >
                         <span>
-                          {item.color} / {item.size} × {item.quantity}
+                          {item.color} {item.size ? `/ ${item.size}` : ""} ×{" "}
+                          {item.quantity}
                         </span>
                         <span>৳{unitPrice * item.quantity}</span>
                       </div>

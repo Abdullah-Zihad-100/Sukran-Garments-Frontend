@@ -2,6 +2,7 @@ import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAdmin } from "@/context/AdminContext";
 import {
   LayoutDashboard,
+  ClockAlert,
   ShoppingBag,
   ClipboardList,
   LogOut,
@@ -19,6 +20,11 @@ const navItems = [
   },
   { to: "/admin/products", icon: <ShoppingBag size={18} />, label: "পণ্য" },
   { to: "/admin/orders", icon: <ClipboardList size={18} />, label: "অর্ডার" },
+  {
+    to: "/admin/incomplete-orders",
+    icon: <ClockAlert size={18} />,
+    label: "অসম্পূর্ণ অর্ডার",
+  },
 ];
 
 export default function AdminLayout() {

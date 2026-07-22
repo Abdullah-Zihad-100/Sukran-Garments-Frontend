@@ -57,7 +57,7 @@ export default function TrackOrder() {
     setSearched(true);
     try {
       const res = await axios.get(
-        "https://sukran-graments-frontend.onrender.com/api/orders/track",
+        `${import.meta.env.VITE_API_URL}//orders/track`,
         {
           params: { phone: phone.trim() },
         },

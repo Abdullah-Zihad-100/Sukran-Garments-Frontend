@@ -4,6 +4,7 @@ import axios from "axios";
 import { useAdmin } from "../../context/AdminContext";
 import toast from "react-hot-toast";
 import { ArrowLeft, Plus, X } from "lucide-react";
+import imageCompression from "browser-image-compression";
 
 const categories = ["শাড়ি", "জামা", "থ্রি-পিস", "সালোয়ার কামিজ"];
 
@@ -36,7 +37,7 @@ export default function ProductForm() {
   useEffect(() => {
     if (isEdit) {
       axios
-        .get(`https://sukran-graments-frontend.onrender.com/api/products/${id}`)
+        .get(`${import.meta.env.VITE_API_URL}products/${id}`)
         .then((res) => setForm({ ...res.data, images: res.data.images || [] }))
         .catch(() => toast.error("পণ্য লোড হয়নি"));
     }
@@ -52,15 +53,27 @@ export default function ProductForm() {
 
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
+
     if (!files.length) return;
+
     setUploadLoading(true);
+
     try {
       const uploaded = await Promise.all(
         files.map(async (file) => {
+          // Compress Image
+          const compressedFile = await imageCompression(file, {
+            maxSizeMB: 0.5,
+            maxWidthOrHeight: 1200,
+            useWebWorker: true,
+            initialQuality: 0.8,
+          });
+
           const formData = new FormData();
-          formData.append("image", file);
+          formData.append("image", compressedFile);
+
           const res = await axios.post(
-            "https://sukran-graments-frontend.onrender.com/api/upload",
+            `${import.meta.env.VITE_API_URL}/upload`,
             formData,
             {
               headers: {
@@ -69,18 +82,24 @@ export default function ProductForm() {
               },
             },
           );
+
           return res.data.url;
         }),
       );
-      setForm((prev) => ({ ...prev, images: [...prev.images, ...uploaded] }));
+
+      setForm((prev) => ({
+        ...prev,
+        images: [...prev.images, ...uploaded],
+      }));
+
       toast.success("ছবি আপলোড হয়েছে ✅");
-    } catch {
+    } catch (err) {
+      console.error(err);
       toast.error("ছবি আপলোড হয়নি");
     } finally {
       setUploadLoading(false);
     }
   };
-
   const removeImage = (index) => {
     setForm((prev) => ({
       ...prev,
@@ -136,7 +155,7 @@ export default function ProductForm() {
 
       if (isEdit) {
         await axios.put(
-          `https://sukran-graments-frontend.onrender.com/api/products/${id}`,
+          `${import.meta.env.VITE_API_URL}/products/${id}`,
           data,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -144,13 +163,9 @@ export default function ProductForm() {
         );
         toast.success("পণ্য আপডেট হয়েছে ✅");
       } else {
-        await axios.post(
-          "https://sukran-graments-frontend.onrender.com/api/products",
-          data,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
+        await axios.post(`${import.meta.env.VITE_API_URL}/products`, data, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         toast.success("পণ্য যোগ হয়েছে ✅");
       }
       navigate("/admin/products");

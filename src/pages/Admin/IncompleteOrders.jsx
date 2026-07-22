@@ -2,73 +2,78 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAdmin } from "../../context/AdminContext";
 import toast from "react-hot-toast";
+import { Trash2 } from "lucide-react"; // ডিলিট আইকনের জন্য
 
-const statuses = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
+const statuses = ["Pending", "Ordered"];
 
 const statusColors = {
-  pending: "bg-yellow-100 text-yellow-700",
-  confirmed: "bg-blue-100 text-blue-700",
-  shipped: "bg-purple-100 text-purple-700",
-  delivered: "bg-green-100 text-green-700",
-  cancelled: "bg-red-100 text-red-700",
+  Pending: "bg-yellow-100 text-yellow-700",
+  Ordered: "bg-green-100 text-green-700",
 };
 
 const statusLabels = {
-  pending: "অপেক্ষমান",
-  confirmed: "নিশ্চিত",
-  shipped: "পাঠানো হয়েছে",
-  delivered: "ডেলিভারি হয়েছে",
-  cancelled: "বাতিল",
+  Pending: "অসম্পূর্ণ (পেন্ডিং)",
+  Ordered: "অর্ডার করা হয়েছে",
 };
 
-const ORDERS_PER_PAGE = 15;
+const LEADS_PER_PAGE = 15;
 
-export default function Orders() {
+export default function IncompleteOrders() {
   const { token } = useAdmin();
-  const [orders, setOrders] = useState([]);
+  const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const fetchOrders = () => {
+  // সব লিড সার্ভার থেকে নিয়ে আসার ফাংশন
+  const fetchLeads = () => {
     axios
-      .get(`${import.meta.env.VITE_API_URL}/orders`, {
+      .get(`${import.meta.env.VITE_API_URL}/incomplete-orders`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      .then((res) => setOrders(res.data))
+      .then((res) => setLeads(res.data))
+      .catch(() => toast.error("অসম্পূর্ণ অর্ডার লোড করা যায়নি"))
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    fetchOrders();
+    fetchLeads();
   }, []);
 
-  // filter পরিবর্তন হলে page 1-এ ফিরিয়ে আনো
+  // ফিল্টার পরিবর্তন হলে পেজ নাম্বার ১-এ ফিরিয়ে নেওয়া
   useEffect(() => {
     setCurrentPage(1);
   }, [filter]);
 
-  const updateStatus = async (id, status) => {
+  // লিড ডিলিট করার ফাংশন
+  const handleDelete = async (id) => {
+    if (
+      !window.confirm(
+        "আপনি কি নিশ্চিতভাবে এই অসম্পূর্ণ অর্ডারটি ডিলিট করতে চান?",
+      )
+    )
+      return;
     try {
-      await axios.put(
-        `${import.meta.env.VITE_API_URL}/orders/${id}/status`,
-        { status },
-        { headers: { Authorization: `Bearer ${token}` } },
+      await axios.delete(
+        `${import.meta.env.VITE_API_URL}//incomplete-orders/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
       );
-      toast.success("স্ট্যাটাস আপডেট হয়েছে ✅");
-      fetchOrders();
+      toast.success("অসম্পূর্ণ অর্ডারটি ডিলিট হয়েছে 🗑️");
+      fetchLeads();
     } catch {
-      toast.error("আপডেট হয়নি");
+      toast.error("ডিলিট করা যায়নি");
     }
   };
 
   const filtered =
-    filter === "all" ? orders : orders.filter((o) => o.status === filter);
+    filter === "all" ? leads : leads.filter((l) => l.status === filter);
 
-  const totalPages = Math.ceil(filtered.length / ORDERS_PER_PAGE) || 1;
+  const totalPages = Math.ceil(filtered.length / LEADS_PER_PAGE) || 1;
   const paginated = filtered.slice(
-    (currentPage - 1) * ORDERS_PER_PAGE,
-    currentPage * ORDERS_PER_PAGE,
+    (currentPage - 1) * LEADS_PER_PAGE,
+    currentPage * LEADS_PER_PAGE,
   );
 
   const goToPage = (page) => {
@@ -87,10 +92,10 @@ export default function Orders() {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
-          অর্ডার লিস্ট
+          অসম্পূর্ণ অর্ডার লিস্ট (Leads)
         </h1>
         <p className="text-gray-500 text-sm mt-1">
-          মোট {orders.length}টি অর্ডার
+          মোট {leads.length}টি অসম্পূর্ণ অর্ডার রয়েছে
         </p>
       </div>
 
@@ -100,7 +105,7 @@ export default function Orders() {
           onClick={() => setFilter("all")}
           className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${filter === "all" ? "bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow" : "bg-white text-gray-600 hover:bg-gray-100"}`}
         >
-          সব ({orders.length})
+          সব ({leads.length})
         </button>
         {statuses.map((s) => (
           <button
@@ -108,73 +113,85 @@ export default function Orders() {
             onClick={() => setFilter(s)}
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${filter === s ? "bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow" : "bg-white text-gray-600 hover:bg-gray-100"}`}
           >
-            {statusLabels[s]} ({orders.filter((o) => o.status === s).length})
+            {statusLabels[s]} ({leads.filter((l) => l.status === s).length})
           </button>
         ))}
       </div>
 
       {filtered.length === 0 ? (
         <div className="bg-white rounded-2xl shadow-sm text-center py-12 text-gray-400 text-sm">
-          কোনো অর্ডার নেই
+          কোনো অসম্পূর্ণ অর্ডার নেই
         </div>
       ) : (
         <>
-          {/* Mobile card view - only visible below md breakpoint */}
+          {/* Mobile Card View (md ব্রেকপয়েন্টের নিচে দেখাবে) */}
           <div className="flex flex-col gap-3 md:hidden">
-            {paginated.map((order) => (
+            {paginated.map((lead) => (
               <div
-                key={order._id}
+                key={lead._id}
                 className="bg-white rounded-2xl shadow-sm p-4 flex flex-col gap-3"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="font-medium text-gray-800 truncate">
-                      {order.customerName}
+                      {lead.customerName}
                     </p>
-                    <p className="text-gray-400 text-xs">{order.phone}</p>
+                    <p className="text-gray-400 text-xs">{lead.phone}</p>
                   </div>
                   <span
-                    className={`shrink-0 px-2 py-1 rounded-lg text-xs font-medium ${statusColors[order.status]}`}
+                    className={`shrink-0 px-2 py-1 rounded-lg text-xs font-medium ${statusColors[lead.status || "Pending"]}`}
                   >
-                    {statusLabels[order.status]}
+                    {statusLabels[lead.status || "Pending"]}
                   </span>
                 </div>
 
-                <p className="text-gray-400 text-xs">{order.address}</p>
+                <p className="text-gray-400 text-xs">
+                  {lead.address || "ঠিকানা দেওয়া হয়নি"}
+                </p>
 
                 <div className="border-t border-gray-100 pt-3 flex items-center justify-between">
                   <div>
                     <p className="text-gray-700 font-medium">
-                      {order.productName}
+                      {lead.productName || "পণ্য নির্দিষ্ট নয়"}
                     </p>
-                    <p className="text-gray-500 text-xs mt-0.5">
-                      {order.selectedColor} · {order.selectedSize}
+                    {lead.orderItems && lead.orderItems[0] && (
+                      <p className="text-gray-500 text-xs mt-0.5">
+                        {lead.orderItems[0].color &&
+                          `${lead.orderItems[0].color}`}
+                        {lead.orderItems[0].size &&
+                          ` · ${lead.orderItems[0].size}`}
+                      </p>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-pink-500">
+                      ৳{lead.totalPrice || "0"}
+                    </p>
+                    <p className="text-gray-400 text-[10px]">
+                      পরিমাণ: {lead.quantity || "1"}টি
                     </p>
                   </div>
-                  <p className="font-bold text-pink-500">৳{order.totalPrice}</p>
                 </div>
 
                 <div className="border-t border-gray-100 pt-3 flex items-center justify-between gap-3">
                   <p className="text-gray-400 text-xs shrink-0">
-                    {new Date(order.createdAt).toLocaleDateString("bn-BD")}
+                    {new Date(lead.createdAt).toLocaleDateString("bn-BD", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </p>
-                  <select
-                    value={order.status}
-                    onChange={(e) => updateStatus(order._id, e.target.value)}
-                    className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-pink-300 cursor-pointer flex-1 max-w-[160px]"
+                  <button
+                    onClick={() => handleDelete(lead._id)}
+                    className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors flex items-center gap-1 text-xs font-medium"
                   >
-                    {statuses.map((s) => (
-                      <option key={s} value={s}>
-                        {statusLabels[s]}
-                      </option>
-                    ))}
-                  </select>
+                    <Trash2 size={14} /> ডিলিট করুন
+                  </button>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Desktop table view - hidden below md breakpoint, unchanged */}
+          {/* Desktop Table View (md ব্রেকপয়েন্টের ওপরে দেখাবে) */}
           <div className="hidden md:block bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -184,78 +201,96 @@ export default function Orders() {
                       গ্রাহক
                     </th>
                     <th className="text-left px-4 py-3 text-gray-600 font-semibold">
-                      পণ্য
+                      পণ্য ও বিবরণ
                     </th>
                     <th className="text-left px-4 py-3 text-gray-600 font-semibold">
-                      রং / সাইজ
-                    </th>
-                    <th className="text-left px-4 py-3 text-gray-600 font-semibold">
-                      মোট
+                      মোট মূল্য
                     </th>
                     <th className="text-left px-4 py-3 text-gray-600 font-semibold">
                       স্ট্যাটাস
                     </th>
                     <th className="text-left px-4 py-3 text-gray-600 font-semibold">
-                      তারিখ
+                      সময় ও তারিখ
                     </th>
-                    <th className="text-left px-4 py-3 text-gray-600 font-semibold">
-                      আপডেট
+                    <th className="text-center px-4 py-3 text-gray-600 font-semibold w-24">
+                      অ্যাকশন
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {paginated.map((order) => (
+                  {paginated.map((lead) => (
                     <tr
-                      key={order._id}
+                      key={lead._id}
                       className="hover:bg-gray-50 transition-colors"
                     >
+                      {/* গ্রাহক তথ্য */}
                       <td className="px-4 py-3">
                         <p className="font-medium text-gray-800">
-                          {order.customerName}
+                          {lead.customerName}
                         </p>
-                        <p className="text-gray-400 text-xs">{order.phone}</p>
-                        <p className="text-gray-400 text-xs">{order.address}</p>
+                        <p className="text-gray-400 text-xs">{lead.phone}</p>
+                        <p className="text-gray-400 text-xs max-w-xs truncate">
+                          {lead.address || "ঠিকানা দেওয়া হয়নি"}
+                        </p>
                       </td>
+
+                      {/* প্রোডাক্ট তথ্য */}
                       <td className="px-4 py-3">
                         <p className="text-gray-700 font-medium">
-                          {order.productName}
+                          {lead.productName || "পণ্য নির্দিষ্ট নয়"}
                         </p>
+                        {lead.orderItems && lead.orderItems[0] && (
+                          <p className="text-gray-400 text-xs">
+                            রং: {lead.orderItems[0].color || "N/A"} | সাইজ:{" "}
+                            {lead.orderItems[0].size || "N/A"}
+                          </p>
+                        )}
                       </td>
-                      <td className="px-4 py-3">
-                        <p className="text-gray-600">{order.selectedColor}</p>
-                        <p className="text-gray-400 text-xs">
-                          {order.selectedSize}
-                        </p>
-                      </td>
+
+                      {/* মোট হিসাব */}
                       <td className="px-4 py-3">
                         <p className="font-bold text-pink-500">
-                          ৳{order.totalPrice}
+                          ৳{lead.totalPrice || "0"}
+                        </p>
+                        <p className="text-gray-400 text-xs">
+                          পরিমাণ: {lead.quantity || "1"}টি
                         </p>
                       </td>
+
+                      {/* স্ট্যাটাস */}
                       <td className="px-4 py-3">
                         <span
-                          className={`px-2 py-1 rounded-lg text-xs font-medium ${statusColors[order.status]}`}
+                          className={`px-2 py-1 rounded-lg text-xs font-medium ${statusColors[lead.status || "Pending"]}`}
                         >
-                          {statusLabels[order.status]}
+                          {statusLabels[lead.status || "Pending"]}
                         </span>
                       </td>
+
+                      {/* সময় ও তারিখ */}
                       <td className="px-4 py-3 text-gray-400 text-xs">
-                        {new Date(order.createdAt).toLocaleDateString("bn-BD")}
+                        <div>
+                          {new Date(lead.createdAt).toLocaleDateString("bn-BD")}
+                        </div>
+                        <div className="text-[10px]">
+                          {new Date(lead.createdAt).toLocaleTimeString(
+                            "bn-BD",
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            },
+                          )}
+                        </div>
                       </td>
-                      <td className="px-4 py-3">
-                        <select
-                          value={order.status}
-                          onChange={(e) =>
-                            updateStatus(order._id, e.target.value)
-                          }
-                          className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-pink-300 cursor-pointer"
+
+                      {/* অ্যাকশন বাটন */}
+                      <td className="px-4 py-3 text-center">
+                        <button
+                          onClick={() => handleDelete(lead._id)}
+                          className="text-red-500 hover:bg-red-50 hover:text-red-600 p-2 rounded-lg transition-colors inline-flex items-center gap-1"
+                          title="ডিলিট করুন"
                         >
-                          {statuses.map((s) => (
-                            <option key={s} value={s}>
-                              {statusLabels[s]}
-                            </option>
-                          ))}
-                        </select>
+                          <Trash2 size={16} />
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -263,11 +298,11 @@ export default function Orders() {
               </table>
             </div>
 
-            {/* Pagination */}
+            {/* Desktop Pagination */}
             <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
               <p className="text-xs text-gray-400">
-                {(currentPage - 1) * ORDERS_PER_PAGE + 1}–
-                {Math.min(currentPage * ORDERS_PER_PAGE, filtered.length)} এর
+                {(currentPage - 1) * LEADS_PER_PAGE + 1}–
+                {Math.min(currentPage * LEADS_PER_PAGE, filtered.length)} এর
                 মধ্যে {filtered.length}টি দেখানো হচ্ছে
               </p>
               <div className="flex items-center gap-1">
@@ -306,12 +341,12 @@ export default function Orders() {
             </div>
           </div>
 
-          {/* Mobile pagination - shown separately below cards */}
+          {/* Mobile Pagination (আলাদা করে কার্ডের নিচে দেখানোর জন্য) */}
           <div className="md:hidden flex flex-col items-center gap-2">
             <p className="text-xs text-gray-400">
-              {(currentPage - 1) * ORDERS_PER_PAGE + 1}–
-              {Math.min(currentPage * ORDERS_PER_PAGE, filtered.length)} এর
-              মধ্যে {filtered.length}টি দেখানো হচ্ছে
+              {(currentPage - 1) * LEADS_PER_PAGE + 1}–
+              {Math.min(currentPage * LEADS_PER_PAGE, filtered.length)} এর মধ্যে{" "}
+              {filtered.length}টি দেখানো হচ্ছে
             </p>
             <div className="flex items-center gap-1 flex-wrap justify-center">
               <button

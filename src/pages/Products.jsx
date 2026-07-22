@@ -96,7 +96,7 @@ export default function Products() {
     if (isNewStock) params.isNewStock = true;
 
     axios
-      .get("https://sukran-graments-frontend.onrender.com/api/products", {
+      .get(`${import.meta.env.VITE_API_URL}/products`, {
         params,
       })
       .then((res) => setProducts(res.data))

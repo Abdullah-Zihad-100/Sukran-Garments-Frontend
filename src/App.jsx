@@ -24,6 +24,7 @@ import { useAdmin } from "@/context/AdminContext";
 import TrackOrder from "./pages/TrackOrder";
 import { useEffect } from "react";
 import Footer from "./components/Footer";
+import IncompleteOrders from "./pages/Admin/IncompleteOrders";
 
 function AdminRoute() {
   const { token } = useAdmin();
@@ -51,7 +52,7 @@ function ScrollToTop() {
 export default function App() {
   return (
     <BrowserRouter>
-    <ScrollToTop/>
+      <ScrollToTop />
       <Routes>
         {/* Public Routes */}
         <Route element={<PublicLayout />}>
@@ -61,7 +62,7 @@ export default function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/favorites" element={<Favorites />} />
-          <Route path="/track-order" element={<TrackOrder/>} />
+          <Route path="/track-order" element={<TrackOrder />} />
           <Route path="/admin/login" element={<AdminLogin />} />
         </Route>
 
@@ -73,6 +74,7 @@ export default function App() {
             <Route path="products" element={<ProductList />} />
             <Route path="products/new" element={<ProductForm />} />
             <Route path="products/edit/:id" element={<ProductForm />} />
+            <Route path="incomplete-orders" element={<IncompleteOrders />} />
           </Route>
         </Route>
       </Routes>

@@ -96,9 +96,7 @@ export default function Home() {
 
   useEffect(() => {
     axios
-      .get(
-        "https://sukran-graments-frontend.onrender.com/api/products?isNewStock=true",
-      )
+      .get(`${import.meta.env.VITE_API_URL}/products?isNewStock=true`)
       .then((res) => setNewProducts(res.data.slice(0, 8)))
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
