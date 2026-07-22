@@ -45,20 +45,125 @@ export default function AdminLayout() {
         className={`fixed top-0 left-0 h-full w-60 bg-slate-900 z-50 flex flex-col transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
         {/* Logo */}
-        <Link to={"/"}>
-          <div className="p-6 border-b border-slate-700">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-500 rounded-xl flex items-center justify-center">
-                <ShoppingBag size={18} className="text-white" />
-              </div>
-              <div>
-                <p className="text-white font-bold text-sm">
-                  সুক্রান গার্মেন্টস
-                </p>
-                <p className="text-slate-400 text-xs">Admin Panel</p>
-              </div>
-            </div>
-          </div>
+        <Link to="/" className="flex">
+          <svg
+            width="270"
+            height="100"
+            viewBox="0 0 680 260"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <linearGradient
+                id="petalGrad2"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
+                <stop offset="0%" stop-color="#F4C0D1" />
+                <stop offset="100%" stop-color="#D4537E" />
+              </linearGradient>
+            </defs>
+            <g transform="translate(120,130)">
+              <g transform="rotate(0)">
+                <ellipse
+                  cx="0"
+                  cy="-38"
+                  rx="20"
+                  ry="38"
+                  fill="url(#petalGrad2)"
+                />
+              </g>
+              <g transform="rotate(60)">
+                <ellipse
+                  cx="0"
+                  cy="-38"
+                  rx="20"
+                  ry="38"
+                  fill="url(#petalGrad2)"
+                  opacity="0.92"
+                />
+              </g>
+              <g transform="rotate(120)">
+                <ellipse
+                  cx="0"
+                  cy="-38"
+                  rx="20"
+                  ry="38"
+                  fill="url(#petalGrad2)"
+                  opacity="0.92"
+                />
+              </g>
+              <g transform="rotate(180)">
+                <ellipse
+                  cx="0"
+                  cy="-38"
+                  rx="20"
+                  ry="38"
+                  fill="url(#petalGrad2)"
+                />
+              </g>
+              <g transform="rotate(240)">
+                <ellipse
+                  cx="0"
+                  cy="-38"
+                  rx="20"
+                  ry="38"
+                  fill="url(#petalGrad2)"
+                  opacity="0.92"
+                />
+              </g>
+              <g transform="rotate(300)">
+                <ellipse
+                  cx="0"
+                  cy="-38"
+                  rx="20"
+                  ry="38"
+                  fill="url(#petalGrad2)"
+                  opacity="0.92"
+                />
+              </g>
+              <circle cx="0" cy="0" r="16" fill="#72243E" />
+              <circle
+                cx="0"
+                cy="0"
+                r="16"
+                fill="none"
+                stroke="#FBEAF0"
+                stroke-width="1.5"
+              />
+            </g>
+            <text
+              x="215"
+              y="120"
+              font-family="Georgia, serif"
+              font-size="52"
+              font-weight="500"
+              fill="#993556"
+            >
+              Sukran
+            </text>
+            <text
+              x="215"
+              y="170"
+              font-family="Georgia, serif"
+              font-size="52"
+              font-weight="500"
+              fill="#72243E"
+            >
+              Garments
+            </text>
+            <text
+              x="217"
+              y="200"
+              font-family="Arial, sans-serif"
+              font-size="16"
+              letter-spacing="2"
+              fill="#D4537E"
+            >
+              WOMEN'S FASHION &#183; BANGLADESH
+            </text>
+          </svg>
         </Link>
 
         {/* Nav Links */}
