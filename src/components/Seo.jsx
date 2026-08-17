@@ -4,13 +4,14 @@ import { Helmet } from "react-helmet-async";
 const SITE_NAME = "Sukran Garments";
 const DEFAULT_DESCRIPTION =
   "Sukran Garments থেকে কিনুন সেরা মানের শাড়ি, থ্রি-পিস ও সালোয়ার কামিজ, সারাদেশে হোম ডেলিভারি।";
-const DEFAULT_IMAGE = "https://sukran-garments.vercel.app/sukran_garments_logo_with_name.png";
+const DEFAULT_IMAGE =
+  "https://sukrangarments.com/sukran_garments_logo_with_name.png";
 const SITE_URL = "https://sukran-garments.vercel";
 
-  <meta
-    property="og:image"
-    content="https://sukran-garments.vercel.app\sukran_garments_logo_with_name.png"
-  />;
+<meta
+  property="og:image"
+  content="https://sukran-garments.vercel.app\sukran_garments_logo_with_name.png"
+/>;
 
 const Seo = ({ title, description, image, url, type = "website" }) => {
   const fullTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
