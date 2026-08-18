@@ -34,85 +34,134 @@ export default function ProductDetail() {
 
   const [leadSaved, setLeadSaved] = useState(false);
 
+  // নতুন ডাটা স্ট্রাকচার: { [colorName]: { [size]: quantity } }
+  // উদাহরণ: { "সবুজ": { "40": 1, "42": 2 }, "লাল": { "M": 1 } }
+  const [selectedColors, setSelectedColors] = useState({});
+
   // ইনকমপ্লিট অর্ডার (Lead) সেভ করার ফাংশন
   const saveIncompleteOrder = async (currentForm = form) => {
-    // যদি নাম এবং ফোন নাম্বার (ন্যূনতম ১১ ডিজিট) না থাকে, তবে সেভ হবে না
     if (!currentForm.customerName || currentForm.phone.length < 11) return;
     if (!product) return;
 
     try {
-      console.log("📤 Saving Incomplete Order...", currentForm);
-
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/incomplete-orders`,
-        {
-          customerName: currentForm.customerName,
-          phone: currentForm.phone,
-          address: currentForm.address || "ঠিকানা দেওয়া হয়নি", // অ্যাড্রেস শুরুতে অপশনাল রাখা হয়েছে
-          product: product._id,
-          productName: product.name,
-        },
-      );
-
-      console.log("✅ Lead Saved Successfully", res.data);
+      await axios.post(`${import.meta.env.VITE_API_URL}/incomplete-orders`, {
+        customerName: currentForm.customerName,
+        phone: currentForm.phone,
+        address: currentForm.address || "ঠিকানা দেওয়া হয়নি",
+        product: product._id,
+        productName: product.name,
+      });
       setLeadSaved(true);
     } catch (err) {
       console.log("❌ Lead Save Failed", err);
     }
   };
 
-  const [orderItems, setOrderItems] = useState([
-    { color: "", size: "", quantity: 1 },
-  ]);
-
   useEffect(() => {
     axios
       .get(`${import.meta.env.VITE_API_URL}/products/${id}`)
       .then((res) => {
-        setProduct(res.data);
-        if (res.data.colors?.length > 0) {
-          setOrderItems([
-            {
-              color: res.data.colors[0],
-              size: res.data.sizes?.[0] || "",
-              quantity: 1,
-            },
-          ]);
-        }
+        const prod = res.data;
+        setProduct(prod);
+
+        const initialColor =
+          prod.colors?.length > 0 ? prod.colors[0] : "_default";
+        const initialSize = prod.sizes?.length > 0 ? prod.sizes[0] : "_nosize";
+
+        setSelectedColors({
+          [initialColor]: {
+            [initialSize]: 1,
+          },
+        });
       })
-      .catch(() => toast.error("পণ্য লোড হয়নি"))
+      .catch(() => toast.error("পণ্য লোড হয়নি"))
       .finally(() => setLoading(false));
   }, [id]);
 
-  const addOrderItem = () => {
-    setOrderItems((prev) => [
-      ...prev,
-      {
-        color: product?.colors?.[0] || "",
-        size: product?.sizes?.[0] || "",
-        quantity: 1,
-      },
-    ]);
+  // রং টগল (চেক/আনচেক) করা
+  const toggleColor = (colorKey, colorIdx) => {
+    setSelectedColors((prev) => {
+      const next = { ...prev };
+      if (next[colorKey]) {
+        delete next[colorKey];
+      } else {
+        const defaultSize = product?.sizes?.[0] || "_nosize";
+        next[colorKey] = {
+          [defaultSize]: 1,
+        };
+        if (product?.images?.[colorIdx]) {
+          setSelectedImage(colorIdx);
+        }
+      }
+      return next;
+    });
   };
 
-  const removeOrderItem = (index) => {
-    if (orderItems.length === 1) return;
-    setOrderItems((prev) => prev.filter((_, i) => i !== index));
+  // নির্দিষ্ট রং-এর ভেতরে সাইজ সিলেক্ট/ডিসিলেক্ট (টগল) করা
+  const toggleSizeForColor = (colorKey, size) => {
+    setSelectedColors((prev) => {
+      const colorSizes = prev[colorKey] ? { ...prev[colorKey] } : {};
+
+      if (colorSizes[size]) {
+        // একাধিক সাইজ থাকলে ডিসিলেক্ট করা যাবে, অন্তত ১টি রাখতে চাইলে চেক দিয়ে দিতে পারেন
+        delete colorSizes[size];
+      } else {
+        colorSizes[size] = 1; // নতুন সাইজ যোগ করলে ডিফল্ট ১
+      }
+
+      return {
+        ...prev,
+        [colorKey]: colorSizes,
+      };
+    });
   };
 
-  const updateOrderItem = (index, field, value) => {
-    setOrderItems((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
-    );
+  // নির্দিষ্ট সাইজের কোয়ান্টিটি বাড়ানো/কমানো
+  const updateQuantity = (colorKey, sizeKey, delta) => {
+    setSelectedColors((prev) => {
+      const colorSizes = { ...prev[colorKey] };
+      const currentQty = colorSizes[sizeKey] || 1;
+      const newQty = currentQty + delta;
+
+      if (newQty <= 0) {
+        delete colorSizes[sizeKey];
+      } else {
+        colorSizes[sizeKey] = newQty;
+      }
+
+      return {
+        ...prev,
+        [colorKey]: colorSizes,
+      };
+    });
   };
 
-  const totalQuantity = orderItems.reduce(
+  // অর্ডার আইটেমস ক্যালকুলেশন
+  const getOrderItems = () => {
+    const items = [];
+    Object.entries(selectedColors).forEach(([colorKey, sizesObj]) => {
+      Object.entries(sizesObj).forEach(([sizeKey, quantity]) => {
+        if (quantity > 0) {
+          items.push({
+            color: colorKey === "_default" ? "" : colorKey,
+            size: sizeKey === "_nosize" ? "" : sizeKey,
+            quantity,
+          });
+        }
+      });
+    });
+    return items;
+  };
+
+  const orderItemsPayload = getOrderItems();
+  const totalQuantity = orderItemsPayload.reduce(
     (sum, item) => sum + item.quantity,
     0,
   );
   const unitPrice = product?.discountPrice || product?.price || 0;
   const deliveryCharge = deliveryArea === "inside" ? 80 : 150;
-  const totalPrice = unitPrice * totalQuantity + deliveryCharge;
+  const totalPrice =
+    unitPrice * totalQuantity + (totalQuantity > 0 ? deliveryCharge : 0);
 
   const handleOrder = async () => {
     if (!form.customerName || !form.phone || !form.address) {
@@ -120,15 +169,9 @@ export default function ProductDetail() {
       return;
     }
 
-    for (const item of orderItems) {
-      if (product.colors?.length > 0 && !item.color) {
-        toast.error("সব আইটেমে রং সিলেক্ট করুন");
-        return;
-      }
-      if (product.sizes?.length > 0 && !item.size) {
-        toast.error("সব আইটেমে সাইজ সিলেক্ট করুন");
-        return;
-      }
+    if (totalQuantity === 0) {
+      toast.error("কমপক্ষে একটি প্রোডাক্ট ও সাইজ সিলেক্ট করুন");
+      return;
     }
 
     setOrderLoading(true);
@@ -137,31 +180,32 @@ export default function ProductDetail() {
         ...form,
         product: product._id,
         productName: product.name,
-        selectedColor: orderItems
+        selectedColor: orderItemsPayload
           .map(
             (i) => `${i.color}${i.size ? ` (${i.size})` : ""} x${i.quantity}`,
           )
           .join(", "),
-        selectedSize: orderItems
+        selectedSize: orderItemsPayload
           .map((i) => i.size)
           .filter(Boolean)
           .join(", "),
         quantity: totalQuantity,
         totalPrice,
-        orderItems,
+        orderItems: orderItemsPayload,
       });
       setOrderSuccess(res.data.order);
       setLeadSaved(false);
       setForm({ customerName: "", phone: "", address: "" });
-      setOrderItems([
-        {
-          color: product.colors?.[0] || "",
-          size: product.sizes?.[0] || "",
-          quantity: 1,
-        },
-      ]);
+
+      const initialColor =
+        product.colors?.length > 0 ? product.colors[0] : "_default";
+      const initialSize =
+        product.sizes?.length > 0 ? product.sizes[0] : "_nosize";
+      setSelectedColors({
+        [initialColor]: { [initialSize]: 1 },
+      });
     } catch {
-      toast.error("অর্ডার হয়নি, আবার চেষ্টা করুন");
+      toast.error("অর্ডার হয়নি, আবার চেষ্টা করুন");
       setLeadSaved(true);
     } finally {
       setOrderLoading(false);
@@ -178,7 +222,7 @@ export default function ProductDetail() {
   if (!product)
     return (
       <div className="min-h-screen flex items-center justify-center text-gray-400">
-        পণ্য পাওয়া যায়নি
+        পণ্য পাওয়া যায়নি
       </div>
     );
 
@@ -188,7 +232,7 @@ export default function ProductDetail() {
         <title>Sukran Garments</title>
         <meta
           name="description"
-          content={`${product.name} - ${product.price} টাকা। সেরা মানের কাপড়, সারাদেশে হোম ডেলিভারি।`}
+          content={`${product.name} - ${product.price} টাকা। সেরা মানের কাপড়, সারাদেশে হোম ডেলিভারি।`}
         />
         <meta property="og:title" content={product.name} />
         <meta property="og:image" content={product.images?.[selectedImage]} />
@@ -229,7 +273,7 @@ export default function ProductDetail() {
                   {Math.round(
                     (1 - product.discountPrice / product.price) * 100,
                   )}
-                  % ছাড়
+                  % ছাড়
                 </div>
               )}
               <button
@@ -292,7 +336,7 @@ export default function ProductDetail() {
               <div className="flex flex-col gap-2 text-sm text-gray-600 mb-4">
                 {product.fabric && (
                   <p>
-                    🧵 কাপড়:{" "}
+                    🧵 কাপড়:{" "}
                     <span className="font-medium text-gray-800">
                       {product.fabric}
                     </span>
@@ -300,7 +344,7 @@ export default function ProductDetail() {
                 )}
                 {product.embroidery && (
                   <p>
-                    ✨ এমব্রয়ডারি:{" "}
+                    ✨ এমব্রয়ডারি:{" "}
                     <span className="font-medium text-gray-800">আছে</span>
                   </p>
                 )}
@@ -329,133 +373,155 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            {/* Order Items */}
+            {/* Color + Size Selection */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-800">
-                  🎨 রং, সাইজ ও পরিমাণ
-                </h3>
-                <button
-                  onClick={addOrderItem}
-                  className="flex items-center gap-1 text-pink-500 text-sm font-medium hover:text-pink-600 transition bg-pink-50 px-3 py-1.5 rounded-lg"
-                >
-                  <Plus size={14} /> আরো যোগ করুন
-                </button>
-              </div>
+              <h3 className="font-semibold text-gray-800 mb-4">
+                🎨 রং ও সাইজ নির্বাচন করুন
+              </h3>
 
               <div className="flex flex-col gap-4">
-                {orderItems.map((item, index) => (
-                  <div
-                    key={index}
-                    className="border border-gray-200 rounded-xl p-4 relative"
-                  >
-                    {orderItems.length > 1 && (
-                      <button
-                        onClick={() => removeOrderItem(index)}
-                        className="absolute top-3 right-3 w-6 h-6 bg-red-100 text-red-500 rounded-full flex items-center justify-center hover:bg-red-200 transition"
+                {(product.colors?.length > 0 ? product.colors : [null]).map(
+                  (color, colorIdx) => {
+                    const isNoColor = color === null;
+                    const colorKey = isNoColor ? "_default" : color;
+                    const colorSelection = selectedColors[colorKey];
+                    const isSelected = !!colorSelection;
+
+                    return (
+                      <div
+                        key={colorKey}
+                        className={`rounded-xl border-2 p-4 transition-all duration-200 ${
+                          isSelected
+                            ? "border-pink-500 bg-pink-50/40"
+                            : "border-gray-200"
+                        }`}
                       >
-                        <X size={12} />
-                      </button>
-                    )}
-
-                    <p className="text-xs font-semibold text-gray-500 mb-3">
-                      আইটেম {index + 1}
-                    </p>
-
-                    <div className="flex flex-col gap-3">
-                      {/* Color */}
-                      {product.colors?.length > 0 && (
-                        <div>
-                          <p className="text-xs text-gray-500 mb-2">রং:</p>
-                          <div className="flex flex-wrap gap-2">
-                            {product.colors.map((color, colorIdx) => (
-                              <button
-                                key={color}
-                                onClick={() => {
-                                  updateOrderItem(index, "color", color);
-                                  if (product.images?.[colorIdx]) {
-                                    setSelectedImage(colorIdx);
-                                  }
-                                }}
-                                className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg border-2 text-sm font-medium transition-all duration-200 ${
-                                  item.color === color
-                                    ? "border-pink-500 bg-pink-50 text-pink-600"
-                                    : "border-gray-200 text-gray-600 hover:border-pink-300"
-                                }`}
-                              >
-                                {product.images?.[colorIdx] && (
-                                  <img
-                                    src={product.images[colorIdx]}
-                                    alt={color}
-                                    className="w-10 h-10 rounded-md object-cover border border-gray-100 shrink-0"
-                                  />
+                        <div className="flex items-center justify-between gap-3">
+                          <label className="flex items-center gap-3 cursor-pointer flex-1">
+                            {!isNoColor && (
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={() => toggleColor(colorKey, colorIdx)}
+                                className="w-5 h-5 accent-pink-500 rounded cursor-pointer shrink-0"
+                              />
+                            )}
+                            <div className="flex items-center gap-2">
+                              {!isNoColor && (
+                                <span className="font-semibold text-gray-800">
+                                  {color}
+                                </span>
+                              )}
+                              <span className="text-sm">
+                                {product.discountPrice && (
+                                  <span className="line-through text-gray-400 mr-1">
+                                    ৳{product.price}
+                                  </span>
                                 )}
-                                <span>{color}</span>
-                              </button>
-                            ))}
-                          </div>
+                                <span className="font-bold text-pink-500">
+                                  ৳{unitPrice}
+                                </span>
+                              </span>
+                            </div>
+                          </label>
+                          {!isNoColor && product.images?.[colorIdx] && (
+                            <img
+                              src={product.images[colorIdx]}
+                              alt={color}
+                              className="w-12 h-12 rounded-lg object-cover border border-gray-100 shrink-0"
+                            />
+                          )}
                         </div>
-                      )}
 
-                      {/* Size */}
-                      {product.sizes?.length > 0 && (
-                        <div>
-                          <p className="text-xs text-gray-500 mb-2">সাইজ:</p>
-                          <div className="flex flex-wrap gap-2">
-                            {product.sizes.map((size) => (
-                              <button
-                                key={size}
-                                onClick={() =>
-                                  updateOrderItem(index, "size", size)
-                                }
-                                className={`px-3 py-1.5 rounded-lg border-2 text-sm font-medium transition-all duration-200 ${item.size === size ? "border-pink-500 bg-pink-50 text-pink-600" : "border-gray-200 text-gray-600 hover:border-pink-300"}`}
-                              >
-                                {size}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                        {isSelected && (
+                          <div className="mt-4 flex flex-col gap-3">
+                            {product.sizes?.length > 0 && (
+                              <div>
+                                <p className="text-xs text-gray-500 mb-2">
+                                  সাইজ (একাধিক নির্বাচন করা যাবে):
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                  {product.sizes.map((size) => {
+                                    const isSizeActive = !!colorSelection[size];
+                                    return (
+                                      <button
+                                        key={size}
+                                        onClick={() =>
+                                          toggleSizeForColor(colorKey, size)
+                                        }
+                                        className={`px-3 py-1.5 rounded-lg border-2 text-sm font-medium transition-all duration-200 ${
+                                          isSizeActive
+                                            ? "border-pink-500 bg-pink-50 text-pink-600"
+                                            : "border-gray-200 text-gray-600 hover:border-pink-300"
+                                        }`}
+                                      >
+                                        {size}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
 
-                      {/* Quantity */}
-                      <div>
-                        <p className="text-xs text-gray-500 mb-2">পরিমাণ:</p>
-                        <div className="flex items-center gap-3">
-                          <button
-                            onClick={() =>
-                              updateOrderItem(
-                                index,
-                                "quantity",
-                                Math.max(1, item.quantity - 1),
-                              )
-                            }
-                            className="w-8 h-8 bg-gray-100 hover:bg-pink-100 text-gray-600 hover:text-pink-600 rounded-lg flex items-center justify-center transition"
-                          >
-                            <Minus size={14} />
-                          </button>
-                          <span className="font-bold text-gray-800 w-8 text-center">
-                            {item.quantity}
-                          </span>
-                          <button
-                            onClick={() =>
-                              updateOrderItem(
-                                index,
-                                "quantity",
-                                item.quantity + 1,
-                              )
-                            }
-                            className="w-8 h-8 bg-gray-100 hover:bg-pink-100 text-gray-600 hover:text-pink-600 rounded-lg flex items-center justify-center transition"
-                          >
-                            <Plus size={14} />
-                          </button>
-                          <span className="text-sm text-gray-500">
-                            = ৳{unitPrice * item.quantity}
-                          </span>
-                        </div>
+                            {/* নির্বাচিত সাইজ সমূহের লিস্ট এবং কোয়ান্টিটি কন্ট্রোল */}
+                            <div className="flex flex-col gap-2 mt-2">
+                              {Object.entries(colorSelection).map(
+                                ([sizeKey, qty]) => {
+                                  return (
+                                    <div
+                                      key={sizeKey}
+                                      className="flex items-center justify-between bg-white border border-gray-100 rounded-xl px-3 py-2 shadow-sm"
+                                    >
+                                      <p className="text-sm font-medium text-gray-700">
+                                        {sizeKey !== "_nosize"
+                                          ? `সাইজ: ${sizeKey}`
+                                          : "আইটেম"}
+                                      </p>
+                                      <div className="flex items-center gap-3">
+                                        <button
+                                          onClick={() =>
+                                            updateQuantity(
+                                              colorKey,
+                                              sizeKey,
+                                              -1,
+                                            )
+                                          }
+                                          className="w-8 h-8 bg-gray-100 hover:bg-pink-100 text-gray-600 hover:text-pink-600 rounded-lg flex items-center justify-center transition"
+                                        >
+                                          <Minus size={14} />
+                                        </button>
+                                        <span className="font-bold text-gray-800 w-6 text-center">
+                                          {qty}
+                                        </span>
+                                        <button
+                                          onClick={() =>
+                                            updateQuantity(colorKey, sizeKey, 1)
+                                          }
+                                          className="w-8 h-8 bg-gray-100 hover:bg-pink-100 text-gray-600 hover:text-pink-600 rounded-lg flex items-center justify-center transition"
+                                        >
+                                          <Plus size={14} />
+                                        </button>
+                                      </div>
+                                    </div>
+                                  );
+                                },
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  </div>
-                ))}
+                    );
+                  },
+                )}
+              </div>
+
+              <div className="mt-4 flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3">
+                <span className="text-sm font-medium text-gray-600">
+                  নির্বাচিত: {totalQuantity} টি
+                </span>
+                <span className="font-bold text-pink-500">
+                  ৳{unitPrice * totalQuantity}
+                </span>
               </div>
             </div>
 
@@ -557,18 +623,22 @@ export default function ProductDetail() {
                     🧾 অর্ডার সামারি
                   </h4>
                   <div className="flex flex-col gap-2 text-sm">
-                    {orderItems.map((item, i) => (
+                    {orderItemsPayload.map((item, index) => (
                       <div
-                        key={i}
+                        key={index}
                         className="flex justify-between text-gray-600"
                       >
                         <span>
-                          {item.color} {item.size ? `/ ${item.size}` : ""} ×{" "}
-                          {item.quantity}
+                          {item.color}
+                          {item.size ? ` (${item.size})` : ""} × {item.quantity}
                         </span>
                         <span>৳{unitPrice * item.quantity}</span>
                       </div>
                     ))}
+                    <div className="flex justify-between text-gray-600 border-t border-gray-200 pt-2">
+                      <span>সাবটোটাল</span>
+                      <span>৳{unitPrice * totalQuantity}</span>
+                    </div>
                     <div className="flex justify-between text-gray-600 border-t border-gray-200 pt-2">
                       <span>ডেলিভারি চার্জ</span>
                       <span>৳{deliveryCharge}</span>
@@ -592,14 +662,14 @@ export default function ProductDetail() {
                   )}
                 </button>
                 <p className="text-center text-xs text-gray-400">
-                  পণ্য পেয়ে সম্পূর্ণ পরিশোধ | ১০০% অরিজিনাল পণ্য
+                  পণ্য পেয়ে সম্পূর্ণ পরিশোধ | ১০০% অরিজিনাল পণ্য
                 </p>
               </div>
             </div>
 
             {/* Call */}
             <div className="text-center">
-              <p className="text-gray-500 text-sm mb-1">প্রয়োজনে কল করুন</p>
+              <p className="text-gray-500 text-sm mb-1">প্রয়োজনে কল করুন</p>
               <a
                 href="tel:+8801405925125"
                 className="inline-flex items-center gap-2 text-pink-500 font-bold text-lg hover:text-pink-600 transition"
@@ -626,7 +696,6 @@ export default function ProductDetail() {
       {orderSuccess && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-            {/* Modal Header */}
             <div className="bg-gradient-to-r from-pink-500 to-purple-500 p-6 text-white text-center relative">
               <button
                 onClick={() => setOrderSuccess(null)}
@@ -637,15 +706,13 @@ export default function ProductDetail() {
               <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Package size={32} className="text-white" />
               </div>
-              <h2 className="text-xl font-bold">অর্ডার সফল হয়েছে! 🎉</h2>
+              <h2 className="text-xl font-bold">অর্ডার সফল হয়েছে! 🎉</h2>
               <p className="text-pink-100 text-sm mt-1">
-                আপনার অর্ডার কনফার্ম করা হয়েছে
+                আপনার অর্ডার কনফার্ম করা হয়েছে
               </p>
             </div>
 
-            {/* Modal Body */}
             <div className="p-6 flex flex-col gap-4">
-              {/* Order Details */}
               <div className="flex flex-col gap-2 text-sm">
                 <div className="flex justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-500">পণ্যের নাম</span>
@@ -679,15 +746,13 @@ export default function ProductDetail() {
                 </div>
               </div>
 
-              {/* Notice */}
               <div className="bg-blue-50 rounded-xl p-4 text-center">
                 <p className="text-blue-700 text-sm font-medium">
                   📞 অর্ডার কনফার্ম করতে আমাদের কাস্টমার সার্ভিস থেকে আপনাকে কল
-                  দেওয়া হবে।
+                  দেওয়া হবে।
                 </p>
               </div>
 
-              {/* Buttons */}
               <div className="flex gap-3">
                 <button
                   onClick={() => setOrderSuccess(null)}
