@@ -55,7 +55,7 @@ export default function IncompleteOrders() {
       return;
     try {
       await axios.delete(
-        `${import.meta.env.VITE_API_URL}//incomplete-orders/${id}`,
+        `${import.meta.env.VITE_API_URL}/incomplete-orders/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },

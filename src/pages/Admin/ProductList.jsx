@@ -24,10 +24,12 @@ export default function ProductList() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}//
-        `, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(
+        `${import.meta.env.VITE_API_URL}/products/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       toast.success("পণ্য ডিলিট হয়েছে ✅");
       setDeleteId(null);
       fetchProducts();

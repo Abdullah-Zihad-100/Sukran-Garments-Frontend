@@ -17,9 +17,9 @@ const cards = [
     icon: <Mail size={24} className="text-pink-500" />,
     bg: "bg-pink-100",
     title: "ইমেল",
-    value: "sukrangarments@gmail.com",
+    value: "garmentssukran@gmail.com",
     sub: null,
-    link: "mailto:sukrangarments@gmail.com",
+    link: "mailto:garmentssukran@gmail.com",
     linkText: null,
   },
   {

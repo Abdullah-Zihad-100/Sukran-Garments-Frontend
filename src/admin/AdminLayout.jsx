@@ -60,8 +60,8 @@ export default function AdminLayout() {
                 x2="100%"
                 y2="100%"
               >
-                <stop offset="0%" stop-color="#F4C0D1" />
-                <stop offset="100%" stop-color="#D4537E" />
+                <stop offset="0%" stopColor="#F4C0D1" />
+                <stop offset="100%" stopColor="#D4537E" />
               </linearGradient>
             </defs>
             <g transform="translate(120,130)">
@@ -130,15 +130,15 @@ export default function AdminLayout() {
                 r="16"
                 fill="none"
                 stroke="#FBEAF0"
-                stroke-width="1.5"
+                strokeWidth="1.5"
               />
             </g>
             <text
               x="215"
               y="120"
-              font-family="Georgia, serif"
-              font-size="52"
-              font-weight="500"
+              fontFamily="Georgia, serif"
+              fontSize="52"
+              fontWeight="500"
               fill="#993556"
             >
               Sukran
@@ -146,9 +146,9 @@ export default function AdminLayout() {
             <text
               x="215"
               y="170"
-              font-family="Georgia, serif"
-              font-size="52"
-              font-weight="500"
+              fontFamily="Georgia, serif"
+              fontSize="52"
+              fontWeight="500"
               fill="#72243E"
             >
               Garments
@@ -156,9 +156,9 @@ export default function AdminLayout() {
             <text
               x="217"
               y="200"
-              font-family="Arial, sans-serif"
-              font-size="16"
-              letter-spacing="2"
+              fontFamily="Arial, sans-serif"
+              fontSize="16"
+              letterSpacing="2"
               fill="#D4537E"
             >
               WOMEN'S FASHION &#183; BANGLADESH

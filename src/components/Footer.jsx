@@ -31,8 +31,8 @@ export default function Footer() {
                   x2="100%"
                   y2="100%"
                 >
-                  <stop offset="0%" stop-color="#F4C0D1" />
-                  <stop offset="100%" stop-color="#D4537E" />
+                  <stop offset="0%" stopColor="#F4C0D1" />
+                  <stop offset="100%" stopColor="#D4537E" />
                 </linearGradient>
               </defs>
               <g transform="translate(120,130)">
@@ -101,15 +101,15 @@ export default function Footer() {
                   r="16"
                   fill="none"
                   stroke="#FBEAF0"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                 />
               </g>
               <text
                 x="215"
                 y="120"
-                font-family="Georgia, serif"
-                font-size="52"
-                font-weight="500"
+                fontFamily="Georgia, serif"
+                fontSize="52"
+                fontWeight="500"
                 fill="#993556"
               >
                 Sukran
@@ -117,9 +117,9 @@ export default function Footer() {
               <text
                 x="215"
                 y="170"
-                font-family="Georgia, serif"
-                font-size="52"
-                font-weight="500"
+                fontFamily="Georgia, serif"
+                fontSize="52"
+                fontWeight="500"
                 fill="#72243E"
               >
                 Garments
@@ -127,9 +127,9 @@ export default function Footer() {
               <text
                 x="217"
                 y="200"
-                font-family="Arial, sans-serif"
-                font-size="16"
-                letter-spacing="2"
+                fontFamily="Arial, sans-serif"
+                fontSize="16"
+                letterSpacing="2"
                 fill="#D4537E"
               >
                 WOMEN'S FASHION &#183; BANGLADESH
@@ -167,7 +167,7 @@ export default function Footer() {
               01405925125
             </a>
             <a
-              href="mailto:sukrangarments@gmail.com"
+              href="mailto:garmentssukran@gmail.com"
               className="flex items-center gap-3 text-gray-400 hover:text-white transition group"
             >
               <div className="w-8 h-8 bg-slate-800 group-hover:bg-pink-500 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-200">
@@ -176,7 +176,7 @@ export default function Footer() {
                   className="text-pink-400 group-hover:text-white"
                 />
               </div>
-              sukrangarments@gmail.com
+              garmentssukran@gmail.com
             </a>
           </div>
         </div>

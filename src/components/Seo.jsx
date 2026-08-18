@@ -10,7 +10,7 @@ const SITE_URL = "https://sukran-garments.vercel";
 
 <meta
   property="og:image"
-  content="https://sukran-garments.vercel.app\sukran_garments_logo_with_name.png"
+  content="https://sukrangarments.com/sukran_garments_logo_with_name.png"
 />;
 
 const Seo = ({ title, description, image, url, type = "website" }) => {

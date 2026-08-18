@@ -25,6 +25,7 @@ import TrackOrder from "./pages/TrackOrder";
 import { useEffect } from "react";
 import Footer from "./components/Footer";
 import IncompleteOrders from "./pages/Admin/IncompleteOrders";
+import NotFound from "./pages/NotFound";
 
 function AdminRoute() {
   const { token } = useAdmin();
@@ -64,6 +65,7 @@ export default function App() {
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/track-order" element={<TrackOrder />} />
           <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="*" element={<NotFound/>} />
         </Route>
 
         {/* Admin Routes — Navbar/Footer নেই */}

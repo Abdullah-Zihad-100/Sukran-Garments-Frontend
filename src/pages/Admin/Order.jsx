@@ -62,6 +62,20 @@ export default function Orders() {
     }
   };
 
+  const deleteOrder = async (id) => {
+    if (!window.confirm("আপনি কি নিশ্চিত এই অর্ডারটি ডিলিট করতে চান?")) return;
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/orders/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success("অর্ডার ডিলিট হয়েছে ✅");
+      fetchOrders();
+    } catch {
+      toast.error("ডিলিট হয়নি");
+    }
+  };
+
+
   const filtered =
     filter === "all" ? orders : orders.filter((o) => o.status === filter);
 
@@ -154,26 +168,35 @@ export default function Orders() {
                   <p className="font-bold text-pink-500">৳{order.totalPrice}</p>
                 </div>
 
-                <div className="border-t border-gray-100 pt-3 flex items-center justify-between gap-3">
-                  <p className="text-gray-400 text-xs shrink-0">
+                <div className="border-t border-gray-100 pt-3 flex items-center justify-between">
+                  <p className="text-gray-400 text-xs">
                     {new Date(order.createdAt).toLocaleDateString("bn-BD")}
                   </p>
-                  <select
-                    value={order.status}
-                    onChange={(e) => updateStatus(order._id, e.target.value)}
-                    className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-pink-300 cursor-pointer flex-1 max-w-[160px]"
-                  >
-                    {statuses.map((s) => (
-                      <option key={s} value={s}>
-                        {statusLabels[s]}
-                      </option>
-                    ))}
-                  </select>
                 </div>
+
+                {/* Status update - full width, easy to tap */}
+                <select
+                  value={order.status}
+                  onChange={(e) => updateStatus(order._id, e.target.value)}
+                  className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-pink-300 cursor-pointer"
+                >
+                  {statuses.map((s) => (
+                    <option key={s} value={s}>
+                      {statusLabels[s]}
+                    </option>
+                  ))}
+                </select>
+
+                {/* Delete button - full width, clearly separated */}
+                <button
+                  onClick={() => deleteOrder(order._id)}
+                  className="w-full text-sm font-medium px-3 py-2.5 rounded-xl text-red-600 bg-red-50 active:bg-red-100 transition-colors"
+                >
+                  🗑️ অর্ডার ডিলিট করুন
+                </button>
               </div>
             ))}
           </div>
-
           {/* Desktop table view - hidden below md breakpoint, unchanged */}
           <div className="hidden md:block bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
@@ -200,6 +223,9 @@ export default function Orders() {
                     </th>
                     <th className="text-left px-4 py-3 text-gray-600 font-semibold">
                       আপডেট
+                    </th>
+                    <th className="text-left px-4 py-3 text-gray-600 font-semibold">
+                      ডিলিট
                     </th>
                   </tr>
                 </thead>
@@ -234,7 +260,7 @@ export default function Orders() {
                       </td>
                       <td className="px-4 py-3">
                         <span
-                          className={`px-2 py-1 rounded-lg text-xs font-medium ${statusColors[order.status]}`}
+                          className={`px-1 py-1 rounded-lg text-xs ${statusColors[order.status]}`}
                         >
                           {statusLabels[order.status]}
                         </span>
@@ -256,6 +282,14 @@ export default function Orders() {
                             </option>
                           ))}
                         </select>
+                      </td>
+                      <td className="px-4 py-3">
+                        <button
+                          onClick={() => deleteOrder(order._id)}
+                          className="text-xs px-3 py-1.5 rounded-lg text-red-600 bg-red-50 hover:bg-red-100 transition-colors"
+                        >
+                          ডিলিট
+                        </button>
                       </td>
                     </tr>
                   ))}

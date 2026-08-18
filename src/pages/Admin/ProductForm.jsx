@@ -37,7 +37,7 @@ export default function ProductForm() {
   useEffect(() => {
     if (isEdit) {
       axios
-        .get(`${import.meta.env.VITE_API_URL}products/${id}`)
+        .get(`${import.meta.env.VITE_API_URL}/products/${id}`)
         .then((res) => setForm({ ...res.data, images: res.data.images || [] }))
         .catch(() => toast.error("পণ্য লোড হয়নি"));
     }
