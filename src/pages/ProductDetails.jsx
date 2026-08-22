@@ -390,20 +390,25 @@ export default function ProductDetail() {
                     return (
                       <div
                         key={colorKey}
+                        onClick={() =>
+                          !isNoColor && toggleColor(colorKey, colorIdx)
+                        }
                         className={`rounded-xl border-2 p-4 transition-all duration-200 ${
+                          !isNoColor ? "cursor-pointer" : ""
+                        } ${
                           isSelected
                             ? "border-pink-500 bg-pink-50/40"
                             : "border-gray-200"
                         }`}
                       >
                         <div className="flex items-center justify-between gap-3">
-                          <label className="flex items-center gap-3 cursor-pointer flex-1">
+                          <div className="flex items-center gap-3 flex-1">
                             {!isNoColor && (
                               <input
                                 type="checkbox"
                                 checked={isSelected}
-                                onChange={() => toggleColor(colorKey, colorIdx)}
-                                className="w-5 h-5 accent-pink-500 rounded cursor-pointer shrink-0"
+                                readOnly
+                                className="w-5 h-5 accent-pink-500 rounded pointer-events-none shrink-0"
                               />
                             )}
                             <div className="flex items-center gap-2">
@@ -423,7 +428,7 @@ export default function ProductDetail() {
                                 </span>
                               </span>
                             </div>
-                          </label>
+                          </div>
                           {!isNoColor && product.images?.[colorIdx] && (
                             <img
                               src={product.images[colorIdx]}
@@ -434,7 +439,10 @@ export default function ProductDetail() {
                         </div>
 
                         {isSelected && (
-                          <div className="mt-4 flex flex-col gap-3">
+                          <div
+                            className="mt-4 flex flex-col gap-3"
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             {product.sizes?.length > 0 && (
                               <div>
                                 <p className="text-xs text-gray-500 mb-2">
@@ -463,48 +471,41 @@ export default function ProductDetail() {
                               </div>
                             )}
 
-                            {/* নির্বাচিত সাইজ সমূহের লিস্ট এবং কোয়ান্টিটি কন্ট্রোল */}
                             <div className="flex flex-col gap-2 mt-2">
                               {Object.entries(colorSelection).map(
-                                ([sizeKey, qty]) => {
-                                  return (
-                                    <div
-                                      key={sizeKey}
-                                      className="flex items-center justify-between bg-white border border-gray-100 rounded-xl px-3 py-2 shadow-sm"
-                                    >
-                                      <p className="text-sm font-medium text-gray-700">
-                                        {sizeKey !== "_nosize"
-                                          ? `সাইজ: ${sizeKey}`
-                                          : "আইটেম"}
-                                      </p>
-                                      <div className="flex items-center gap-3">
-                                        <button
-                                          onClick={() =>
-                                            updateQuantity(
-                                              colorKey,
-                                              sizeKey,
-                                              -1,
-                                            )
-                                          }
-                                          className="w-8 h-8 bg-gray-100 hover:bg-pink-100 text-gray-600 hover:text-pink-600 rounded-lg flex items-center justify-center transition"
-                                        >
-                                          <Minus size={14} />
-                                        </button>
-                                        <span className="font-bold text-gray-800 w-6 text-center">
-                                          {qty}
-                                        </span>
-                                        <button
-                                          onClick={() =>
-                                            updateQuantity(colorKey, sizeKey, 1)
-                                          }
-                                          className="w-8 h-8 bg-gray-100 hover:bg-pink-100 text-gray-600 hover:text-pink-600 rounded-lg flex items-center justify-center transition"
-                                        >
-                                          <Plus size={14} />
-                                        </button>
-                                      </div>
+                                ([sizeKey, qty]) => (
+                                  <div
+                                    key={sizeKey}
+                                    className="flex items-center justify-between bg-white border border-gray-100 rounded-xl px-3 py-2 shadow-sm"
+                                  >
+                                    <p className="text-sm font-medium text-gray-700">
+                                      {sizeKey !== "_nosize"
+                                        ? `সাইজ: ${sizeKey}`
+                                        : "আইটেম"}
+                                    </p>
+                                    <div className="flex items-center gap-3">
+                                      <button
+                                        onClick={() =>
+                                          updateQuantity(colorKey, sizeKey, -1)
+                                        }
+                                        className="w-8 h-8 bg-gray-100 hover:bg-pink-100 text-gray-600 hover:text-pink-600 rounded-lg flex items-center justify-center transition"
+                                      >
+                                        <Minus size={14} />
+                                      </button>
+                                      <span className="font-bold text-gray-800 w-6 text-center">
+                                        {qty}
+                                      </span>
+                                      <button
+                                        onClick={() =>
+                                          updateQuantity(colorKey, sizeKey, 1)
+                                        }
+                                        className="w-8 h-8 bg-gray-100 hover:bg-pink-100 text-gray-600 hover:text-pink-600 rounded-lg flex items-center justify-center transition"
+                                      >
+                                        <Plus size={14} />
+                                      </button>
                                     </div>
-                                  );
-                                },
+                                  </div>
+                                ),
                               )}
                             </div>
                           </div>
@@ -671,10 +672,11 @@ export default function ProductDetail() {
             <div className="text-center">
               <p className="text-gray-500 text-sm mb-1">প্রয়োজনে কল করুন</p>
               <a
-                href="tel:+8801405925125"
+                href="tel:+8801629450724"
                 className="inline-flex items-center gap-2 text-pink-500 font-bold text-lg hover:text-pink-600 transition"
               >
-                <Phone size={20} /> 01405925125
+                <Phone size={20} />
+                01629450724
               </a>
             </div>
 

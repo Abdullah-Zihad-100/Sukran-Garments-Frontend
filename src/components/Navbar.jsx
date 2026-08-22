@@ -13,7 +13,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { favorites } = useFavorites();
-//  console.log(favorites);
+  //  console.log(favorites);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -253,7 +253,7 @@ export default function Navbar() {
             </li>
             <li>
               <a
-                href="https://wa.me/8801733633684"
+                href="https://wa.me/8801629450724"
                 target="_blank"
                 rel="noreferrer"
                 className="bg-green-500 text-white px-4 py-2 rounded-full text-sm hover:bg-green-600 transition-all duration-200 hover:shadow-md hover:scale-105"
@@ -475,7 +475,7 @@ export default function Navbar() {
 
           {/* WhatsApp */}
           <a
-            href="https://wa.me/8801733633684"
+            href="https://wa.me/8801629450724"
             target="_blank"
             rel="noreferrer"
             className="mt-4 bg-green-500 text-white px-4 py-3 rounded-xl text-center font-medium hover:bg-green-600 transition-all duration-200"

@@ -26,18 +26,18 @@ const cards = [
     icon: <Phone size={24} className="text-blue-500" />,
     bg: "bg-blue-100",
     title: "ফোন",
-    value: "+8801733633684",
+    value: "+8801629450724",
     sub: "09:00 AM - 09:00 PM",
-    link: "tel:+8801733633684",
+    link: "tel:+8801629450724",
     linkText: null,
   },
   {
     icon: <MessageCircle size={24} className="text-green-500" />,
     bg: "bg-green-100",
     title: "WhatsApp",
-    value: "+8801733633684",
+    value: "+8801629450724",
     sub: null,
-    link: "https://wa.me/8801733633684",
+    link: "https://wa.me/8801629450724",
     linkText: "চ্যাট শুরু করুন",
   },
 ];
@@ -281,7 +281,7 @@ export default function Contact() {
                 WhatsApp এ আমাদের সাথে সরাসরি যোগাযোগ করুন।
               </p>
               <a
-                href="https://wa.me/8801733633684"
+                href="https://wa.me/8801629450724"
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 hover:shadow-md"

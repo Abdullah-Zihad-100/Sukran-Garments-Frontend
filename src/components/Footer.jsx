@@ -155,7 +155,7 @@ export default function Footer() {
               </span>
             </div>
             <a
-              href="tel:+8801733633684"
+              href="tel:+8801629450724"
               className="flex items-center gap-3 text-gray-400 hover:text-white transition group"
             >
               <div className="w-8 h-8 bg-slate-800 group-hover:bg-pink-500 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-200">
@@ -164,7 +164,7 @@ export default function Footer() {
                   className="text-pink-400 group-hover:text-white"
                 />
               </div>
-              01405925125
+              01629450724
             </a>
             <a
               href="mailto:garmentssukran@gmail.com"
@@ -225,7 +225,7 @@ export default function Footer() {
             </a>
 
             <a
-              href="https://wa.me/8801733633684"
+              href="https://wa.me/8801629450724"
               target="_blank"
               rel="noreferrer"
               className="w-11 h-11 bg-slate-800 hover:bg-green-500 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110 hover:shadow-lg hover:shadow-green-500/20"
@@ -266,7 +266,7 @@ export default function Footer() {
           {/* WhatsApp Button */}
 
           <a
-            href="https://wa.me/8801733633684"
+            href="https://wa.me/8801629450724"
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-5 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:shadow-lg hover:shadow-green-500/30 w-fit"
@@ -287,7 +287,7 @@ export default function Footer() {
       {/* WhatsApp Floating Button */}
 
       <a
-        href="https://wa.me/8801733633684"
+        href="https://wa.me/8801629450724"
         target="_blank"
         rel="noreferrer"
         className="fixed bottom-6 right-6 w-14 h-14 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center shadow-lg shadow-green-500/30 hover:shadow-xl transition-all duration-200 hover:scale-110 z-50"
