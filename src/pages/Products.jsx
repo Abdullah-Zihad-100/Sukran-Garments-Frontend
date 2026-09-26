@@ -7,46 +7,55 @@ import { useFavorites } from "../context/FavoritesContext";
 const categories = ["সব পণ্য", "শাড়ি", "জামা", "থ্রি-পিস", "সালোয়ার কামিজ"];
 
 function ProductCard({ product }) {
-  const { toggleFavorite, isFavorite } = useFavorites();
+  // স্টক জিরো বা তার কম কিনা চেক করা হচ্ছে
+  const isOutOfStock = product.stock !== undefined && product.stock <= 0;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group">
-      <div className="relative overflow-hidden h-60 bg-gray-100">
+    <div
+      className={`bg-white rounded-2xl shadow-sm transition-all duration-300 overflow-hidden group ${
+        isOutOfStock
+          ? "opacity-60 cursor-not-allowed select-none bg-gray-50"
+          : "hover:shadow-lg"
+      }`}
+    >
+      <div className="relative overflow-hidden h-56 bg-gray-100">
         {product.images?.[0] ? (
           <img
             src={product.images[0]}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className={`w-full h-full object-cover transition-transform duration-500 ${
+              isOutOfStock ? "grayscale" : "group-hover:scale-105"
+            }`}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-6xl">
+          <div className="w-full h-full flex items-center justify-center text-gray-300 text-5xl">
             👗
           </div>
         )}
-        {product.isNewStock && (
-          <span className="absolute top-3 left-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs px-3 py-1 rounded-full font-medium">
-            নতুন
+
+        {/* স্টক আউট ব্যাজ (স্টক ০ হলে দেখাবে) */}
+        {isOutOfStock ? (
+          <span className="absolute top-3 right-3 bg-gray-800/80 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full font-medium">
+            স্টক আউট
           </span>
+        ) : (
+          /* নতুন স্টক ব্যাজ (স্টক থাকলে দেখাবে) */
+          product.isNewStock && (
+            <span className="absolute top-3 right-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs px-3 py-1 rounded-full font-medium">
+              নতুন
+            </span>
+          )
         )}
-        {product.discountPrice && (
-          <span className="absolute top-3 right-14 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+
+        {/* ডিসকাউন্ট ব্যাজ */}
+        {product.discountPrice && !isOutOfStock && (
+          <div className="absolute top-3 left-4 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
             -{Math.round((1 - product.discountPrice / product.price) * 100)}%
-          </span>
+            ছাড়
+          </div>
         )}
-        <button
-          onClick={() => toggleFavorite(product)}
-          className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full shadow flex items-center justify-center hover:scale-110 transition-transform"
-        >
-          <Heart
-            size={16}
-            className={
-              isFavorite(product._id)
-                ? "fill-pink-500 text-pink-500"
-                : "text-gray-400"
-            }
-          />
-        </button>
       </div>
+
       <div className="p-4">
         <p className="text-xs text-purple-500 font-medium mb-1">
           {product.category}
@@ -68,17 +77,27 @@ function ProductCard({ product }) {
             <span className="text-pink-500 font-bold">৳{product.price}</span>
           )}
         </div>
-        <Link
-          to={`/products/${product._id}`}
-          className="block w-full text-center bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-sm py-2.5 rounded-xl transition-all duration-200 hover:shadow-md font-medium"
-        >
-          বিস্তারিত দেখুন
-        </Link>
+
+        {/* লিঙ্ক/বাটন পরিবর্তন - স্টক আউট হলে ক্লিক কাজ করবে না */}
+        {isOutOfStock ? (
+          <button
+            disabled
+            className="block w-full text-center bg-gray-300 text-gray-500 text-sm py-2.5 rounded-xl font-medium cursor-not-allowed"
+          >
+            স্টক নেই
+          </button>
+        ) : (
+          <Link
+            to={`/products/${product._id}`}
+            className="block w-full text-center bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-sm py-2.5 rounded-xl transition-all duration-200 hover:shadow-md font-medium"
+          >
+            বিস্তারিত দেখুন
+          </Link>
+        )}
       </div>
     </div>
   );
 }
-
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
