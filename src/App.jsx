@@ -17,7 +17,6 @@ import Order from "./pages/Admin/Order";
 import ProductList from "./pages/Admin/ProductList";
 import Navbar from "./components/Navbar";
 import Favorites from "./pages/Favorites";
-// import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import AdminLayout from "./admin/AdminLayout";
 import { useAdmin } from "@/context/AdminContext";
@@ -26,6 +25,8 @@ import { useEffect } from "react";
 import Footer from "./components/Footer";
 import IncompleteOrders from "./pages/Admin/IncompleteOrders";
 import NotFound from "./pages/NotFound";
+
+const PIXEL_ID = "1013433508410967";
 
 function AdminRoute() {
   const { token } = useAdmin();
@@ -42,6 +43,7 @@ function PublicLayout() {
     </>
   );
 }
+
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -50,10 +52,32 @@ function ScrollToTop() {
   return null;
 }
 
+// Facebook Pixel init + route change e PageView track
+function PixelTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (window.fbq) {
+      window.fbq("init", PIXEL_ID);
+      // PageView এখান থেকে সরিয়ে দিলাম
+    }
+  }, []);
+
+  useEffect(() => {
+    if (window.fbq) {
+      window.fbq("track", "PageView");
+    }
+  }, [location]);
+
+  return null;
+}
+
+
 export default function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <PixelTracker />
       <Routes>
         {/* Public Routes */}
         <Route element={<PublicLayout />}>
@@ -65,7 +89,7 @@ export default function App() {
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/track-order" element={<TrackOrder />} />
           <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="*" element={<NotFound/>} />
+          <Route path="*" element={<NotFound />} />
         </Route>
 
         {/* Admin Routes — Navbar/Footer নেই */}

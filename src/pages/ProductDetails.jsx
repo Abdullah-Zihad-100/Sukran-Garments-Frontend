@@ -194,6 +194,15 @@ export default function ProductDetail() {
         orderItems: orderItemsPayload,
       });
       setOrderSuccess(res.data.order);
+
+      // Facebook Pixel — Purchase event track
+      if (window.fbq) {
+        window.fbq("track", "Purchase", {
+          value: totalPrice,
+          currency: "BDT",
+        });
+      }
+
       setLeadSaved(false);
       setForm({ customerName: "", phone: "", address: "" });
 
@@ -205,13 +214,12 @@ export default function ProductDetail() {
         [initialColor]: { [initialSize]: 1 },
       });
     } catch {
-      toast.error("অর্ডার হয়নি, আবার চেষ্টা করুন");
+      toast.error("অর্ডার হয়নি, আবার চেষ্টা করুন");
       setLeadSaved(true);
     } finally {
       setOrderLoading(false);
     }
   };
-
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
