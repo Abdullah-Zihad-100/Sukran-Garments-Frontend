@@ -26,7 +26,7 @@ import Footer from "./components/Footer";
 import IncompleteOrders from "./pages/Admin/IncompleteOrders";
 import NotFound from "./pages/NotFound";
 
-const PIXEL_ID = "1013433508410967";
+const PIXEL_ID = "1167061565858955";
 
 function AdminRoute() {
   const { token } = useAdmin();
