@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -33,6 +33,10 @@ export default function ProductDetail() {
   });
 
   const [leadSaved, setLeadSaved] = useState(false);
+
+  // Meta Pixel Event deduplication guards
+  const viewedContentId = useRef(null);
+  const initiateCheckoutTracked = useRef(false);
 
   // নতুন ডাটা স্ট্রাকচার: { [colorName]: { [size]: quantity } }
   // উদাহরণ: { "সবুজ": { "40": 1, "42": 2 }, "লাল": { "M": 1 } }
@@ -77,6 +81,22 @@ export default function ProductDetail() {
       .catch(() => toast.error("পণ্য লোড হয়নি"))
       .finally(() => setLoading(false));
   }, [id]);
+
+  // Meta Pixel — ViewContent (once per loaded product)
+  useEffect(() => {
+    if (!product?._id || !window.fbq) return;
+    if (viewedContentId.current === product._id) return;
+
+    window.fbq("track", "ViewContent", {
+      content_ids: [String(product._id)],
+      content_name: product.name,
+      content_type: "product",
+      value: Number(product.discountPrice || product.price || 0),
+      currency: "BDT",
+    });
+
+    viewedContentId.current = product._id;
+  }, [product]);
 
   // রং টগল (চেক/আনচেক) করা
   const toggleColor = (colorKey, colorIdx) => {
@@ -163,6 +183,22 @@ export default function ProductDetail() {
   const totalPrice =
     unitPrice * totalQuantity + (totalQuantity > 0 ? deliveryCharge : 0);
 
+  // Meta Pixel — InitiateCheckout (once per product page visit)
+  const trackInitiateCheckout = () => {
+    if (initiateCheckoutTracked.current || !window.fbq || !product) return;
+
+    window.fbq("track", "InitiateCheckout", {
+      content_ids: [String(product._id)],
+      content_name: product.name,
+      content_type: "product",
+      value: Number(totalPrice),
+      currency: "BDT",
+      num_items: Number(totalQuantity),
+    });
+
+    initiateCheckoutTracked.current = true;
+  };
+
   const handleOrder = async () => {
     if (!form.customerName || !form.phone || !form.address) {
       toast.error("সব তথ্য পূরণ করুন");
@@ -198,8 +234,12 @@ export default function ProductDetail() {
       // Facebook Pixel — Purchase event track
       if (window.fbq) {
         window.fbq("track", "Purchase", {
-          value: totalPrice,
+          content_ids: [String(product._id)],
+          content_name: product.name,
+          content_type: "product",
+          value: Number(totalPrice),
           currency: "BDT",
+          num_items: Number(totalQuantity),
         });
       }
 
@@ -550,6 +590,7 @@ export default function ProductDetail() {
                       placeholder="আপনার পূর্ণ নাম"
                       value={form.customerName}
                       onChange={(e) => {
+                        trackInitiateCheckout();
                         const updatedForm = {
                           ...form,
                           customerName: e.target.value,
@@ -572,6 +613,7 @@ export default function ProductDetail() {
                       placeholder="01XXXXXXXXX"
                       value={form.phone}
                       onChange={(e) => {
+                        trackInitiateCheckout();
                         const updatedForm = { ...form, phone: e.target.value };
                         setForm(updatedForm);
                         if (updatedForm.phone.length === 11) {
@@ -592,6 +634,7 @@ export default function ProductDetail() {
                     placeholder="বাড়ি, রোড, এলাকা, থানা, জেলা"
                     value={form.address}
                     onChange={(e) => {
+                      trackInitiateCheckout();
                       const updatedForm = { ...form, address: e.target.value };
                       setForm(updatedForm);
                     }}

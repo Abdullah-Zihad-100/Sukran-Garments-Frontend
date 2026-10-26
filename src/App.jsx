@@ -26,8 +26,6 @@ import Footer from "./components/Footer";
 import IncompleteOrders from "./pages/Admin/IncompleteOrders";
 import NotFound from "./pages/NotFound";
 
-const PIXEL_ID = "1167061565858955";
-
 function AdminRoute() {
   const { token } = useAdmin();
   return token ? <Outlet /> : <Navigate to="/admin/login" />;
@@ -46,32 +44,27 @@ function PublicLayout() {
 
 function ScrollToTop() {
   const { pathname } = useLocation();
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [pathname]);
+
   return null;
 }
 
-// Facebook Pixel init + route change e PageView track
+// Pixel Base Code index.html-এ একবার initialize হয়।
+// React Router-এর initial page এবং প্রতিটি route change-এ PageView পাঠানো হয়।
 function PixelTracker() {
   const location = useLocation();
 
   useEffect(() => {
-    if (window.fbq) {
-      window.fbq("init", PIXEL_ID);
-      // PageView এখান থেকে সরিয়ে দিলাম
-    }
-  }, []);
-
-  useEffect(() => {
-    if (window.fbq) {
+    if (typeof window.fbq === "function") {
       window.fbq("track", "PageView");
     }
-  }, [location]);
+  }, [location.pathname, location.search]);
 
   return null;
 }
-
 
 export default function App() {
   return (
