@@ -32,9 +32,22 @@ export default function ProductDetail() {
     address: "",
   });
 
+  // GA4 Ecommerce Event Helper
+  const pushGA4Event = (eventName, ecommerceData) => {
+    window.dataLayer = window.dataLayer || [];
+
+    window.dataLayer.push({ ecommerce: null });
+
+    window.dataLayer.push({
+      event: eventName,
+      ecommerce: ecommerceData,
+    });
+  };
+
   const [leadSaved, setLeadSaved] = useState(false);
 
   // Meta Pixel Event deduplication guards
+
   const viewedContentId = useRef(null);
   const initiateCheckoutTracked = useRef(false);
 
@@ -83,17 +96,39 @@ export default function ProductDetail() {
   }, [id]);
 
   // Meta Pixel — ViewContent (once per loaded product)
+  // GA4 + Meta Pixel — ViewContent
   useEffect(() => {
-    if (!product?._id || !window.fbq) return;
+    if (!product?._id) return;
+
     if (viewedContentId.current === product._id) return;
 
-    window.fbq("track", "ViewContent", {
-      content_ids: [String(product._id)],
-      content_name: product.name,
-      content_type: "product",
-      value: Number(product.discountPrice || product.price || 0),
+    const price = Number(product.discountPrice || product.price || 0);
+
+    // GA4 View Item
+    pushGA4Event("view_item", {
       currency: "BDT",
+      value: price,
+      items: [
+        {
+          item_id: String(product._id),
+          item_name: product.name,
+          item_category: product.category || "",
+          price,
+          quantity: 1,
+        },
+      ],
     });
+
+    // Meta Pixel ViewContent
+    if (typeof window.fbq === "function") {
+      window.fbq("track", "ViewContent", {
+        content_ids: [String(product._id)],
+        content_name: product.name,
+        content_type: "product",
+        value: price,
+        currency: "BDT",
+      });
+    }
 
     viewedContentId.current = product._id;
   }, [product]);
@@ -184,20 +219,41 @@ export default function ProductDetail() {
     unitPrice * totalQuantity + (totalQuantity > 0 ? deliveryCharge : 0);
 
   // Meta Pixel — InitiateCheckout (once per product page visit)
+  // GA4 + Meta Pixel — InitiateCheckout
   const trackInitiateCheckout = () => {
-    if (initiateCheckoutTracked.current || !window.fbq || !product) return;
+    if (initiateCheckoutTracked.current || !product) return;
 
-    window.fbq("track", "InitiateCheckout", {
-      content_ids: [String(product._id)],
-      content_name: product.name,
-      content_type: "product",
-      value: Number(totalPrice),
+    // GA4 Begin Checkout
+    pushGA4Event("begin_checkout", {
       currency: "BDT",
-      num_items: Number(totalQuantity),
+      value: Number(totalPrice),
+      items: orderItemsPayload.map((item) => ({
+        item_id: String(product._id),
+        item_name: product.name,
+        item_category: product.category || "",
+        item_variant: `${item.color} ${item.size}`.trim(),
+        price: Number(unitPrice),
+        quantity: Number(item.quantity),
+      })),
     });
+
+    // Meta Pixel InitiateCheckout
+    if (typeof window.fbq === "function") {
+      window.fbq("track", "InitiateCheckout", {
+        content_ids: [String(product._id)],
+        content_name: product.name,
+        content_type: "product",
+        value: Number(totalPrice),
+        currency: "BDT",
+        num_items: Number(totalQuantity),
+      });
+    }
 
     initiateCheckoutTracked.current = true;
   };
+
+
+
 
   const handleOrder = async () => {
     if (!form.customerName || !form.phone || !form.address) {
@@ -230,6 +286,29 @@ export default function ProductDetail() {
         orderItems: orderItemsPayload,
       });
       setOrderSuccess(res.data.order);
+      // GA4 Purchase — only after successful order API response
+      const completedOrder = res.data.order;
+
+      pushGA4Event("purchase", {
+        transaction_id: String(
+          completedOrder?._id ||
+            completedOrder?.orderId ||
+            res.data.orderId ||
+            "",
+        ),
+        currency: "BDT",
+        value: Number(totalPrice),
+        shipping: Number(deliveryCharge),
+        items: orderItemsPayload.map((item) => ({
+          item_id: String(product._id),
+          item_name: product.name,
+          item_category: product.category || "",
+          item_variant: `${item.color} ${item.size}`.trim(),
+          price: Number(unitPrice),
+          quantity: Number(item.quantity),
+        })),
+      });
+      
 
       // Facebook Pixel — Purchase event track
       if (window.fbq) {

@@ -6,6 +6,7 @@ import {
   Outlet,
   useLocation,
 } from "react-router-dom";
+import { useEffect, useRef } from "react";
 import Products from "./pages/Products";
 import ProductDetails from "./pages/ProductDetails";
 import About from "./pages/About";
@@ -21,7 +22,6 @@ import Home from "./pages/Home";
 import AdminLayout from "./admin/AdminLayout";
 import { useAdmin } from "@/context/AdminContext";
 import TrackOrder from "./pages/TrackOrder";
-import { useEffect } from "react";
 import Footer from "./components/Footer";
 import IncompleteOrders from "./pages/Admin/IncompleteOrders";
 import NotFound from "./pages/NotFound";
@@ -56,16 +56,22 @@ function ScrollToTop() {
 // React Router-এর initial page এবং প্রতিটি route change-এ PageView পাঠানো হয়।
 function PixelTracker() {
   const location = useLocation();
+  const lastTrackedPage = useRef("");
 
   useEffect(() => {
+    const currentPage = location.pathname + location.search;
+
+    // একই পেজের PageView দ্বিতীয়বার পাঠানো বন্ধ করবে
+    if (lastTrackedPage.current === currentPage) return;
+
     if (typeof window.fbq === "function") {
       window.fbq("track", "PageView");
+      lastTrackedPage.current = currentPage;
     }
   }, [location.pathname, location.search]);
 
   return null;
 }
-
 export default function App() {
   return (
     <BrowserRouter>
